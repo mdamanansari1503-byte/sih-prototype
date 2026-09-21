@@ -26,8 +26,11 @@ import {
 
 export default function IndustryDashboard({
   projects = [],
+  problems = [],
   onProjectUpdated,
+  onProblemUpdated,
   onSelectProject,
+  onSelectProblem,
   setActiveTab
 }) {
   const { currentUser } = useAuth();
@@ -41,8 +44,8 @@ export default function IndustryDashboard({
   const [searchQuery, setSearchQuery] = useState('');
   const [filterDomain, setFilterDomain] = useState('all');
 
-  // Verified Projects Needing Funding
-  const [sponsorableProjects, setSponsorableProjects] = useState([
+  // Baseline verified projects for CSR catalogue
+  const defaultSponsorableProjects = [
     {
       id: 'SPON-01',
       title: 'Drinking Water Fluoride Filtration Unit in Tupudana',
@@ -103,7 +106,42 @@ export default function IndustryDashboard({
       status: 'verified_needing_csr',
       img: 'https://images.unsplash.com/photo-1509062522246-3755977927d7?w=400'
     }
-  ]);
+  ];
+
+  // Dynamically merge user-reported citizen problems and active projects into sponsor list
+  const dynamicProblemsList = (problems || []).map((p) => {
+    const rawBudget = p.verification?.allocatedBudget || (p.aiAnalysis?.estimatedBudget ? parseInt(String(p.aiAnalysis.estimatedBudget).replace(/\D/g, '')) : 120000) || 120000;
+    const govtShare = Math.round(rawBudget * 0.4);
+    const indShare = Math.round(rawBudget * 0.6);
+    const loc = typeof p.location === 'object' ? `${p.location?.address || p.location?.city || 'Ranchi'}, ${p.location?.state || 'Jharkhand'}` : (p.location || 'Jharkhand');
+    const district = (typeof p.location === 'object' && p.location?.city) ? `${p.location.city} District` : 'Jharkhand District';
+    const uni = p.adoptionRequest?.universityName || (p.status === 'adopted' || p.status === 'in_progress' ? 'MANIT Innovation Hub' : 'BIT Mesra / Jharkhand Innovation Cell');
+    const tm = p.adoptionRequest?.teamName || (p.status === 'adopted' || p.status === 'in_progress' ? 'Student Engineering Squad' : 'Campus Innovation Taskforce');
+    const imgUrl = (p.images && p.images.length > 0) ? p.images[0] : 'https://images.unsplash.com/photo-1509228468518-180dd4864904?w=400';
+
+    return {
+      id: p.id || `PROB-${Math.random()}`,
+      title: p.title || 'Civic Problem Resolution Project',
+      district: district,
+      location: loc,
+      domain: p.category || 'Civic Infrastructure',
+      university: uni,
+      team: tm,
+      govtMatchingFund: govtShare,
+      industryFundNeeded: indShare,
+      totalBudget: rawBudget,
+      impact: p.aiAnalysis?.summary || 'Direct community benefit with student-engineered hardware deployment.',
+      status: p.status || 'reported',
+      img: imgUrl,
+      rawProblem: p
+    };
+  });
+
+  // Filter out any duplicates if problem id already exists
+  const combinedSponsorable = [
+    ...dynamicProblemsList,
+    ...defaultSponsorableProjects.filter(dp => !dynamicProblemsList.some(dp2 => dp2.id === dp.id || dp2.title.toLowerCase() === dp.title.toLowerCase()))
+  ];
 
   // Funding History Ledger (Project, Govt Funding, Industry Funding, Total, Recipient Team)
   const [fundingHistory, setFundingHistory] = useState([
@@ -219,17 +257,21 @@ export default function IndustryDashboard({
 
     setIsTransferring(true);
     setTimeout(() => {
+      const partnerName = currentUser?.organization || 'Tata Steel CSR Trust';
+      const pledgeAmount = Number(sponsorAmount);
+      const today = new Date().toISOString().split('T')[0];
+
       const newHistoryItem = {
         id: `HIST-JH-${Math.floor(100 + Math.random() * 900)}`,
         projectTitle: selectedProjectForFunding.title,
-        problemRef: `#PROB-JH-${Math.floor(1000 + Math.random() * 9000)}`,
+        problemRef: selectedProjectForFunding.rawProblem?.id ? `#${selectedProjectForFunding.rawProblem.id}` : `#PROB-JH-${Math.floor(1000 + Math.random() * 9000)}`,
         govtFunding: selectedProjectForFunding.govtMatchingFund,
-        industryFunding: Number(sponsorAmount),
-        totalAmount: selectedProjectForFunding.govtMatchingFund + Number(sponsorAmount),
+        industryFunding: pledgeAmount,
+        totalAmount: selectedProjectForFunding.govtMatchingFund + pledgeAmount,
         recipientUniversity: selectedProjectForFunding.university,
         recipientTeam: selectedProjectForFunding.team,
-        industryPartner: currentUser?.organization || 'Tata Steel CSR Trust',
-        date: new Date().toISOString().split('T')[0],
+        industryPartner: partnerName,
+        date: today,
         escrowStatus: 'Government Escrow Cleared',
         route: `Industry ➔ Jharkhand Govt Treasury ➔ ${selectedProjectForFunding.university}`
       };
@@ -238,34 +280,63 @@ export default function IndustryDashboard({
         id: `UTIL-0${utilizationData.length + 1}`,
         projectTitle: selectedProjectForFunding.title,
         recipientTeam: `${selectedProjectForFunding.university} (${selectedProjectForFunding.team})`,
-        totalGrant: selectedProjectForFunding.govtMatchingFund + Number(sponsorAmount),
-        industryShare: Number(sponsorAmount),
+        totalGrant: selectedProjectForFunding.govtMatchingFund + pledgeAmount,
+        industryShare: pledgeAmount,
         govtShare: selectedProjectForFunding.govtMatchingFund,
         spentAmount: 0,
-        progressPercent: 15,
+        progressPercent: 20,
         milestone: 'Phase 1: Grant Disbursed through Govt Escrow • Procurement Initiated',
         ucStatus: 'Escrow Released to University Lab',
         expensesBreakdown: [
-          { item: 'Initial Equipment & Raw Material Procurement', cost: Math.round(sponsorAmount * 0.5), vendor: 'Pending Invoice' },
-          { item: 'Sensor & Prototyping Allocation', cost: Math.round(sponsorAmount * 0.3), vendor: 'Pending Invoice' }
+          { item: 'Initial Equipment & Raw Material Procurement', cost: Math.round(pledgeAmount * 0.5), vendor: 'Pending Invoice' },
+          { item: 'Sensor & Prototyping Allocation', cost: Math.round(pledgeAmount * 0.3), vendor: 'Pending Invoice' }
         ]
       };
+
+      // If this corresponds to a citizen problem, update problem object with industry pledge
+      if (selectedProjectForFunding.rawProblem && onProblemUpdated) {
+        const existingPledges = selectedProjectForFunding.rawProblem.industryPledges || [];
+        const updatedProblem = {
+          ...selectedProjectForFunding.rawProblem,
+          industryPledges: [
+            ...existingPledges,
+            {
+              partner: partnerName,
+              amount: pledgeAmount,
+              date: new Date().toISOString(),
+              status: 'Escrow Cleared'
+            }
+          ]
+        };
+        onProblemUpdated(updatedProblem);
+      }
+
+      // If this corresponds to an active project, update project budget and industry sponsor
+      if (selectedProjectForFunding.rawProject && onProjectUpdated) {
+        const updatedProj = {
+          ...selectedProjectForFunding.rawProject,
+          industrySponsor: partnerName,
+          industryGrant: pledgeAmount,
+          allocatedBudget: (selectedProjectForFunding.rawProject.allocatedBudget || 0) + pledgeAmount
+        };
+        onProjectUpdated(updatedProj);
+      }
 
       setFundingHistory(prev => [newHistoryItem, ...prev]);
       setUtilizationData(prev => [newUtilizationItem, ...prev]);
       setIsTransferring(false);
       setSelectedProjectForFunding(null);
 
-      alert(`₹${Number(sponsorAmount).toLocaleString('en-IN')} CSR funding successfully routed through Jharkhand Government Treasury to ${selectedProjectForFunding.university} (${selectedProjectForFunding.team})!`);
+      alert(`₹${pledgeAmount.toLocaleString('en-IN')} CSR funding successfully routed through Jharkhand Government Treasury Escrow to ${selectedProjectForFunding.university} (${selectedProjectForFunding.team})!`);
       setActiveView('history');
     }, 900);
   };
 
-  const filteredProjects = sponsorableProjects.filter(p => {
-    const matchesSearch = p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          p.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          p.university.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesDomain = filterDomain === 'all' || p.domain.toLowerCase().includes(filterDomain.toLowerCase());
+  const filteredProjects = combinedSponsorable.filter(p => {
+    const matchesSearch = (p.title || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          (p.location || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          (p.university || '').toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesDomain = filterDomain === 'all' || (p.domain || '').toLowerCase().includes(filterDomain.toLowerCase());
     return matchesSearch && matchesDomain;
   });
 
@@ -306,7 +377,7 @@ export default function IndustryDashboard({
               <Briefcase className="w-4 h-4" />
               <span>Sponsor Projects</span>
               <span className="ml-1 px-1.5 py-0.5 rounded-full text-[10px] bg-emerald-800 text-emerald-100">
-                {sponsorableProjects.length}
+                {combinedSponsorable.length}
               </span>
             </button>
 

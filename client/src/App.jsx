@@ -214,8 +214,11 @@ function AppContent() {
             {activeTab === 'industry' && (
               <IndustryDashboard
                 projects={projects}
+                problems={problems}
                 onProjectUpdated={handleProjectUpdated}
+                onProblemUpdated={handleProblemUpdated}
                 onSelectProject={handleSelectProject}
+                onSelectProblem={handleSelectProblem}
                 setActiveTab={setActiveTab}
               />
             )}

@@ -73,20 +73,20 @@ export default function ProjectDetailView({
     });
   };
 
-  const handleStudentClick = (studentName, role) => {
+  const handleStudentClick = (studentName, role, department, customAvatar) => {
     if (!onOpenProfile) return;
-    const name = studentName || 'Rohan Nair';
+    const name = studentName || (isSolved ? 'Aakash Deshmukh' : 'Rohan Nair');
     onOpenProfile({
       type: 'student',
       name: name,
-      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150',
-      institution: project?.universityName || 'MANIT Bhopal',
-      department: 'Department of Electrical & IoT Engineering',
+      avatar: customAvatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150',
+      institution: project?.universityName || (isSolved ? 'BIT Mesra Innovation Cell' : 'MANIT Bhopal Innovation Hub'),
+      department: department || 'Department of Electrical & IoT Engineering',
       year: 'Final Year (4th Year, B.Tech)',
-      roleInTeam: role || 'Student Lead & IoT Lead',
-      email: `${name.toLowerCase().replace(/\s+/g, '')}@student.manit.ac.in`,
+      roleInTeam: role || 'Student Engineer',
+      email: `${name.toLowerCase().replace(/\s+/g, '')}@student.ac.in`,
       phone: '+91 98123 45678',
-      solvedCount: 4,
+      solvedCount: isSolved ? 3 : 2,
       teamSize: 5,
       skills: ['IoT & LoRa Telemetry', 'LiFePO4 Solar Systems', 'Hardware Assembly', 'Rapid Prototyping', 'C++ / MicroPython'],
       bio: 'Student innovator passionate about building low-cost, resilient civic hardware systems for rural and urban local bodies.'
@@ -462,7 +462,9 @@ export default function ProjectDetailView({
                 <div className="bg-blue-50/60 border border-blue-100 p-3 rounded-2xl">
                   <div className="text-[10px] text-slate-500 font-bold uppercase">Grant / CSR Budget</div>
                   <div className="font-bold text-blue-900 mt-0.5">
-                    {problem?.verification?.allocatedBudget
+                    {problem?.industryPledges && problem.industryPledges.length > 0
+                      ? `₹${((problem.verification?.allocatedBudget || 120000) + problem.industryPledges.reduce((s, p) => s + (Number(p.amount) || 0), 0)).toLocaleString('en-IN')} (Govt + CSR Co-Funded)`
+                      : problem?.verification?.allocatedBudget
                       ? `₹${problem.verification.allocatedBudget.toLocaleString('en-IN')} (Sanctioned)`
                       : isSolved
                       ? `₹1,90,000 (Sanctioned)`
@@ -492,6 +494,20 @@ export default function ProjectDetailView({
             <div className="space-y-4">
               {(() => {
                 const logs = [];
+
+                if (problem?.industryPledges && problem.industryPledges.length > 0) {
+                  problem.industryPledges.forEach((pledge, idx) => {
+                    logs.push({
+                      id: `log-csr-${idx}`,
+                      date: pledge.date ? new Date(pledge.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Today',
+                      author: pledge.partner || 'Tata Steel CSR Trust',
+                      role: 'Corporate CSR Partner',
+                      title: `₹${(pledge.amount || 75000).toLocaleString('en-IN')} CSR Co-Funding Grant Disbursed`,
+                      desc: `CSR matching grant approved and routed through Jharkhand Government Treasury Escrow to university innovation lab for hardware procurement and rapid prototyping.`,
+                      photo: null
+                    });
+                  });
+                }
 
                 if (project || isSolved || isInProgress) {
                   logs.push({
@@ -718,28 +734,112 @@ export default function ProjectDetailView({
               )}
 
               {/* Pillar 4: Industry / CSR Partner */}
-              <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-2 opacity-90">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-sm">
-                    🏢
-                  </div>
-                  <div>
-                    <div className="text-xs font-bold text-slate-900">
-                      {(project || isSolved || isInProgress) ? 'Amit Verma (CSR Lead)' : 'Corporate CSR Partner'}
+              {(() => {
+                const latestPledge = problem?.industryPledges && problem.industryPledges.length > 0
+                  ? problem.industryPledges[problem.industryPledges.length - 1]
+                  : null;
+                const hasPledge = Boolean(latestPledge);
+
+                return (
+                  <div className={`border rounded-2xl p-4 space-y-2 transition ${hasPledge ? 'bg-amber-50/60 border-amber-300 shadow-xs' : 'bg-slate-50 border-slate-200 opacity-90'}`}>
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-sm ring-2 ring-amber-400/40">
+                        🏢
+                      </div>
+                      <div>
+                        <div className="text-xs font-bold text-slate-900">
+                          {hasPledge ? latestPledge.partner : (project || isSolved || isInProgress) ? 'Amit Verma (CSR Lead)' : 'Corporate CSR Partner'}
+                        </div>
+                        <div className="text-[10px] text-amber-700 font-semibold">Industry & CSR Sponsorship</div>
+                        <div className="text-[10px] text-slate-500">
+                          {hasPledge ? `${latestPledge.partner} • ₹${(latestPledge.amount || 75000).toLocaleString('en-IN')} Co-Funded` : (project || isSolved || isInProgress) ? 'Tata Sustainability CSR' : 'Eligible for CSR Matching Grant'}
+                        </div>
+                      </div>
                     </div>
-                    <div className="text-[10px] text-amber-700 font-semibold">Industry & CSR Sponsorship</div>
-                    <div className="text-[10px] text-slate-400">{(project || isSolved || isInProgress) ? 'Tata Sustainability CSR' : 'Eligible for CSR Matching Grant'}</div>
+                    <p className="text-[11px] text-slate-600 pt-1">
+                      {hasPledge
+                        ? `Co-funded ₹${(latestPledge.amount || 75000).toLocaleString('en-IN')} through Government Treasury Escrow for component acceleration and prototyping.`
+                        : (project || isSolved || isInProgress)
+                        ? 'Provided technical review and ₹75,000 grant for hardware and component acceleration.'
+                        : 'Provides corporate sponsorship and component matching grants once university project starts.'}
+                    </p>
+                    <div className={`text-[10px] font-bold ${hasPledge ? 'text-emerald-700' : 'text-slate-400'} pt-1`}>
+                      {hasPledge ? '✓ CSR Escrow Grant Disbursed' : 'Corporate CSR Partner'}
+                    </div>
                   </div>
-                </div>
-                <p className="text-[11px] text-slate-500 pt-1">
-                  {(project || isSolved || isInProgress)
-                    ? 'Provided technical review and ₹75,000 grant for hardware and component acceleration.'
-                    : 'Provides corporate sponsorship and component matching grants once university project starts.'}
-                </p>
-                <div className="text-[10px] font-bold text-slate-400 pt-1">Corporate CSR Partner</div>
-              </div>
+                );
+              })()}
 
             </div>
+
+            {/* Student Engineering Squad & Team Members Grid */}
+            {(project || isSolved || isInProgress) && (() => {
+              const studentMembers = (project?.teamMembers && project.teamMembers.length > 0)
+                ? project.teamMembers.map((name, i) => {
+                    const roles = ['IoT Firmware & LoRa Engineer', 'Hardware Assembly & BMS Specialist', 'Structural & CAD Design Lead', 'Sensors & Quality Testing Lead', 'Field Deployment Coordinator'];
+                    const depts = ['Dept of Electrical & IoT Engineering', 'Dept of Electronics & Telecomm', 'Dept of Civil & Structural Engineering', 'Dept of Computer Science', 'Dept of Mechanical Engineering'];
+                    const avatars = [
+                      'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150',
+                      'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=150',
+                      'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150',
+                      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150',
+                      'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150'
+                    ];
+                    return {
+                      name,
+                      role: roles[i % roles.length],
+                      dept: depts[i % depts.length],
+                      avatar: avatars[i % avatars.length]
+                    };
+                  })
+                : [
+                    { name: 'Tanvi Joshi', role: 'IoT Firmware & LoRa Engineer', dept: 'Dept of Electronics & Telecomm', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150' },
+                    { name: 'Rahul Patil', role: 'Hardware Assembly & BMS Specialist', dept: 'Dept of Electrical Engineering', avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=150' },
+                    { name: 'Sneha Rao', role: 'Structural & CAD Design Lead', dept: 'Dept of Civil & Structural Engineering', avatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150' },
+                    { name: 'Karan Singh', role: 'Sensors & Quality Testing Lead', dept: 'Dept of Computer Science & IoT', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150' }
+                  ];
+
+              return (
+                <div className="pt-6 border-t border-slate-200/80 space-y-3.5">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="text-xs sm:text-sm font-bold text-slate-900 font-heading flex items-center gap-2">
+                        <GraduationCap className="w-4 h-4 text-indigo-600" />
+                        <span>Student Engineering Deployment Squad ({studentMembers.length} Members)</span>
+                      </h4>
+                      <p className="text-[11px] text-slate-500">Student team members fabricating hardware, coding firmware, and executing field trials.</p>
+                    </div>
+                    <span className="text-[10px] text-emerald-700 font-bold bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
+                      ● Active College Contributors
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                    {studentMembers.map((member, idx) => (
+                      <div
+                        key={idx}
+                        onClick={() => handleStudentClick(member.name, member.role, member.dept, member.avatar)}
+                        className="bg-white hover:bg-emerald-50/70 border border-slate-200 hover:border-emerald-300 p-3.5 rounded-2xl cursor-pointer transition shadow-xs group/member space-y-2"
+                        title={`Click to view ${member.name}'s Contributor Profile`}
+                      >
+                        <div className="flex items-center gap-2.5">
+                          <img src={member.avatar} alt={member.name} className="w-9 h-9 rounded-full object-cover ring-2 ring-slate-100 group-hover/member:ring-emerald-400 transition shrink-0" />
+                          <div className="min-w-0 flex-1">
+                            <div className="text-xs font-bold text-slate-900 truncate group-hover/member:text-emerald-800 flex items-center justify-between">
+                              <span className="truncate">{member.name}</span>
+                              <span className="text-[10px] text-emerald-600 shrink-0 ml-1">↗</span>
+                            </div>
+                            <div className="text-[10px] text-emerald-700 font-semibold truncate">{member.role}</div>
+                          </div>
+                        </div>
+                        <div className="text-[10px] text-slate-400 truncate pt-0.5">{member.dept}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })()}
+
           </div>
         )}
 
