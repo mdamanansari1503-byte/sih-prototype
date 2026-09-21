@@ -240,24 +240,57 @@ export const api = {
   },
 
   createProblem: async (formData) => {
+    let title = 'New Civic Report';
+    let description = '';
+    let category = 'Infrastructure & Public Safety';
+    let address = 'Main Road';
+    let city = 'Ranchi';
+    let state = 'Jharkhand';
+    let reportedByName = 'Rahul Mishra';
+    let imagePreview = null;
+
+    if (formData instanceof FormData) {
+      title = formData.get('title') || title;
+      description = formData.get('description') || description;
+      category = formData.get('category') || category;
+      address = formData.get('address') || address;
+      city = formData.get('city') || city;
+      state = formData.get('state') || state;
+      reportedByName = formData.get('reportedByName') || reportedByName;
+      imagePreview = formData.get('imagePreview') || formData.get('imageUrl') || null;
+    } else if (typeof formData === 'object' && formData !== null) {
+      title = formData.title || title;
+      description = formData.description || description;
+      category = formData.category || category;
+      address = formData.address || address;
+      city = formData.city || city;
+      state = formData.state || state;
+      reportedByName = formData.reportedByName || reportedByName;
+      imagePreview = formData.imagePreview || formData.imageUrl || (formData.images && formData.images[0]) || null;
+    }
+
     try {
       const res = await fetch(`${API_BASE}/problems`, {
         method: 'POST',
         body: formData
       });
-      if (res.ok) return await res.json();
-    } catch (e) {}
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.data) {
+          if (imagePreview && (!data.data.images || data.data.images.length === 0 || data.data.images[0]?.includes('photo-1547683905-f686c993aae5'))) {
+            data.data.images = [imagePreview];
+          }
+          const currentProblems = getLocalProblems();
+          const updated = [data.data, ...currentProblems.filter(p => p.id !== data.data.id)];
+          localStorage.setItem('awaazgram_problems', JSON.stringify(updated));
+          return data;
+        }
+      }
+    } catch (e) {
+      console.warn('Backend offline, saving locally:', e.message);
+    }
 
     // Fallback in-memory/localStorage creation
-    const title = formData.get('title') || 'New Civic Report';
-    const description = formData.get('description') || '';
-    const category = formData.get('category') || 'Infrastructure & Public Safety';
-    const address = formData.get('address') || 'Main Road';
-    const city = formData.get('city') || 'Ranchi';
-    const state = formData.get('state') || 'Jharkhand';
-    const reportedByName = formData.get('reportedByName') || 'Rahul Mishra';
-    const imagePreview = formData.get('imagePreview') || null;
-
     const aiAnalysis = generateCivicAIAnalysis(title, description, category, address, city);
 
     const newProblem = {

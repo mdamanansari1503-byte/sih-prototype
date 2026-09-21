@@ -117,7 +117,7 @@ router.post('/problems', upload.array('media', 4), async (req, res) => {
       return res.status(400).json({ success: false, message: 'Title and description are required' });
     }
 
-    // Handle uploaded media files or image URLs
+    // Handle uploaded media files or image URLs / Base64
     const imageUrls = [];
     if (req.files && req.files.length > 0) {
       for (const file of req.files) {
@@ -126,12 +126,15 @@ router.post('/problems', upload.array('media', 4), async (req, res) => {
       }
     }
 
-    // If body contains existing imageUrl or fallback
-    if (req.body.imageUrl && imageUrls.length === 0) {
-      imageUrls.push(req.body.imageUrl);
-    }
+    // Check body parameters
     if (imageUrls.length === 0) {
-      imageUrls.push('https://images.unsplash.com/photo-1547683905-f686c993aae5?w=800&auto=format&fit=crop&q=80');
+      if (req.body.imagePreview) {
+        imageUrls.push(req.body.imagePreview);
+      } else if (req.body.imageUrl) {
+        imageUrls.push(req.body.imageUrl);
+      } else if (req.body.image) {
+        imageUrls.push(req.body.image);
+      }
     }
 
     // Perform Gemini AI Analysis

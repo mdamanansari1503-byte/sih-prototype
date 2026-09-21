@@ -41,6 +41,7 @@ export default function CitizenPortal({ problems = [], onProblemCreated, onSelec
   const [address, setAddress] = useState('Sector 4, Main Road, Bokaro');
   const [city, setCity] = useState('Bokaro');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [submitSuccessNotice, setSubmitSuccessNotice] = useState(null);
 
@@ -72,6 +73,7 @@ export default function CitizenPortal({ problems = [], onProblemCreated, onSelec
   const handleImageChange = (e) => {
     const file = e.target.files?.[0];
     if (file) {
+      setImageFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result);
@@ -95,8 +97,12 @@ export default function CitizenPortal({ problems = [], onProblemCreated, onSelec
       formData.append('state', 'Jharkhand');
       formData.append('reportedById', currentUser?.id || 'user-cit-1');
       formData.append('reportedByName', currentUser?.name || 'Rahul Mishra');
+      if (imageFile) {
+        formData.append('media', imageFile);
+      }
       if (imagePreview) {
         formData.append('imagePreview', imagePreview);
+        formData.append('imageUrl', imagePreview);
       }
 
       const res = await api.createProblem(formData);
@@ -109,6 +115,7 @@ export default function CitizenPortal({ problems = [], onProblemCreated, onSelec
         // Reset form
         setTitle('');
         setDescription('');
+        setImageFile(null);
         setImagePreview(null);
         setReportFilter('all');
 
