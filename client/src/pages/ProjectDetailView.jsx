@@ -409,19 +409,35 @@ export default function ProjectDetailView({
 
               {/* Quick Status Stats */}
               <div className="grid grid-cols-2 gap-3 text-xs">
-                <div
-                  onClick={() => handleUniversityClick(project?.universityName || 'MANIT Bhopal')}
-                  className="bg-emerald-50/60 hover:bg-emerald-100/80 border border-emerald-100 p-3 rounded-2xl cursor-pointer transition group/team"
-                  title="Click to view University Contributor Profile"
-                >
-                  <div className="text-[10px] text-slate-500 font-bold uppercase">Assigned Team</div>
-                  <div className="font-bold text-emerald-900 mt-0.5 group-hover/team:underline decoration-emerald-400">
-                    {project?.teamName || 'MANIT Innovation Hub'} ↗
+                {project ? (
+                  <div
+                    onClick={() => handleUniversityClick(project?.universityName || 'MANIT Bhopal')}
+                    className="bg-emerald-50/60 hover:bg-emerald-100/80 border border-emerald-100 p-3 rounded-2xl cursor-pointer transition group/team"
+                    title="Click to view University Contributor Profile"
+                  >
+                    <div className="text-[10px] text-slate-500 font-bold uppercase">Assigned Team</div>
+                    <div className="font-bold text-emerald-900 mt-0.5 group-hover/team:underline decoration-emerald-400">
+                      {project?.teamName || 'MANIT Innovation Hub'} ↗
+                    </div>
                   </div>
-                </div>
+                ) : (
+                  <div className="bg-slate-50 border border-slate-200 p-3 rounded-2xl">
+                    <div className="text-[10px] text-slate-500 font-bold uppercase">Assigned Team</div>
+                    <div className="font-bold text-slate-700 mt-0.5">
+                      {isVerified ? 'Open for University Adoption' : 'Awaiting Govt Approval'}
+                    </div>
+                  </div>
+                )}
+
                 <div className="bg-blue-50/60 border border-blue-100 p-3 rounded-2xl">
-                  <div className="text-[10px] text-slate-500 font-bold uppercase">Sponsor / CSR</div>
-                  <div className="font-bold text-blue-900 mt-0.5">Tata CSR Grant</div>
+                  <div className="text-[10px] text-slate-500 font-bold uppercase">Grant / CSR Budget</div>
+                  <div className="font-bold text-blue-900 mt-0.5">
+                    {problem?.verification?.allocatedBudget
+                      ? `₹${problem.verification.allocatedBudget.toLocaleString('en-IN')} (Sanctioned)`
+                      : isVerified
+                      ? `₹1,50,000 (Sanctioned)`
+                      : (problem?.aiAnalysis?.estimatedBudget || 'Est. ₹1,20,000')}
+                  </div>
                 </div>
               </div>
 
@@ -436,82 +452,112 @@ export default function ProjectDetailView({
             <div className="flex items-center justify-between pb-2 border-b border-slate-100">
               <div>
                 <h3 className="text-sm font-bold text-slate-900 font-heading">Field Engineering & Deployment Logs</h3>
-                <p className="text-xs text-slate-500">Chronological verification reports submitted by student engineers & supervisors.</p>
+                <p className="text-xs text-slate-500">Chronological verification reports submitted by citizens, authorities, and student engineers.</p>
               </div>
               <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
-                ● 3 Verified Updates
+                ● {project ? '3 Verified Updates' : (isVerified ? '3 Verification Milestones' : '2 Initial AI Logs')}
               </span>
             </div>
 
             <div className="space-y-4">
-              {[
-                {
-                  id: 1,
-                  date: '15 May 2025 • 04:30 PM',
-                  author: 'Prof. Kumar',
-                  role: 'Faculty Mentor (MANIT Bhopal)',
-                  title: 'Component Procurement Completed & Bench Testing Passed',
-                  desc: 'All 12 Smart LED fixtures and LiFePO4 battery modules were received from certified suppliers and successfully passed 48-hour continuous thermal stress and lux output tests in the electronics lab.',
-                  photo: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=600'
-                },
-                {
-                  id: 2,
-                  date: '12 May 2025 • 11:00 AM',
-                  author: 'Anita Sharma',
-                  role: 'Municipal Verification Officer',
-                  title: 'On-Site Ground Verification & Grant Sanctioned',
-                  desc: 'Inspected Ward 12 street light feeder pillar. Found high public transit safety risk. Approved grant allocation of ₹1,80,000 for university deployment.',
-                  photo: null
-                },
-                {
-                  id: 3,
-                  date: '10 May 2025 • 09:15 AM',
-                  author: 'Rahul Mishra',
-                  role: 'Citizen Reporter',
-                  title: 'Civic Grievance Submitted with Geotagged Photo',
-                  desc: 'Submitted report on hazardous unlit stretch near Ward 12 junction. AI automated priority assigned as High (8.5/10).',
-                  photo: 'https://images.unsplash.com/photo-1547683905-f686c993aae5?w=600'
+              {(() => {
+                const logs = [];
+
+                if (project) {
+                  logs.push({
+                    id: 'log-proj',
+                    date: project?.startedAt ? new Date(project.startedAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '15 May 2026',
+                    author: project?.teamLeader || 'Prof. Kumar',
+                    role: `Faculty Mentor (${project?.universityName || 'MANIT Bhopal'})`,
+                    title: 'Component Procurement Completed & Bench Testing Passed',
+                    desc: `Team ${project?.teamName || 'Innovation Cell'} received hardware components from certified vendors and passed 48-hour thermal stress and lab diagnostics.`,
+                    photo: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=600'
+                  });
                 }
-              ].map(up => {
-                const isCitizen = up.role.toLowerCase().includes('citizen');
-                const isUni = up.role.toLowerCase().includes('faculty') || up.role.toLowerCase().includes('mentor');
-                return (
-                  <div key={up.id} className="bg-slate-50/80 border border-slate-200 rounded-2xl p-4 sm:p-5 space-y-3">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 pb-2 border-b border-slate-200/70">
-                      <div
-                        onClick={() => {
-                          if (isCitizen) handleCitizenClick(up.author);
-                          else if (isUni) handleUniversityClick('MANIT Bhopal');
-                        }}
-                        className={`flex items-center gap-2 ${isCitizen || isUni ? 'cursor-pointer group/auth' : ''}`}
-                        title={isCitizen ? 'View Citizen Profile' : isUni ? 'View University Profile' : 'Institutional Official'}
-                      >
-                        <div className="w-7 h-7 rounded-full bg-emerald-600 text-white font-bold text-xs flex items-center justify-center">
-                          {up.author[0]}
-                        </div>
-                        <div>
-                          <span className={`font-bold text-xs text-slate-900 ${isCitizen || isUni ? 'group-hover/auth:text-emerald-700 underline decoration-emerald-300' : ''}`}>
-                            {up.author} {isCitizen || isUni ? '↗' : ''}
-                          </span>
-                          <span className="text-[10px] text-slate-400 ml-2">({up.role})</span>
-                        </div>
-                      </div>
-                      <span className="text-[11px] text-slate-400 font-medium">{up.date}</span>
-                    </div>
 
-                    <div>
-                      <h4 className="text-xs sm:text-sm font-bold text-slate-900">{up.title}</h4>
-                      <p className="text-xs text-slate-600 mt-1 leading-relaxed">{up.desc}</p>
-                    </div>
+                if (isVerified || project || isSolved) {
+                  logs.push({
+                    id: 'log-govt',
+                    date: problem?.verification?.verifiedAt ? new Date(problem.verification.verifiedAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '12 May 2026',
+                    author: problem?.verification?.verifiedBy || 'Anita Sharma',
+                    role: 'Municipal Verification Officer',
+                    title: 'On-Site Ground Verification & Municipal Grant Sanctioned',
+                    desc: `Inspected site at ${locationText}. Authorized municipal grant allocation of ₹${(problem?.verification?.allocatedBudget || 150000).toLocaleString('en-IN')} for university engineering deployment.`,
+                    photo: null
+                  });
+                } else {
+                  logs.push({
+                    id: 'log-pending-govt',
+                    date: 'Currently Pending',
+                    author: 'Municipal Inspection Division',
+                    role: 'Government Authority Queue',
+                    title: 'Awaiting Municipal Officer Ground Verification',
+                    desc: `Grievance is queued for official on-site inspection in Government Portal. Municipal clearance is required before university student teams can adopt and claim budget grant.`,
+                    photo: null
+                  });
+                }
 
-                    {up.photo && (
-                      <div className="pt-1">
-                        <img src={up.photo} alt="Proof" className="w-44 h-28 rounded-xl object-cover border border-slate-200 shadow-xs" />
+                logs.push({
+                  id: 'log-ai',
+                  date: problem?.reportedAt ? new Date(problem.reportedAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Instant Automated Diagnosis',
+                  author: 'Google Gemini 2.0 Civic Engine',
+                  role: 'AI Diagnostic Protocol',
+                  title: `AI Civic Assessment: ${problem?.aiAnalysis?.urgency || 'High'} Urgency Verified`,
+                  desc: problem?.aiAnalysis?.summary || `Automated technical appraisal: Feasibility score ${problem?.aiAnalysis?.feasibilityScore || 90}/100. Recommended for rapid student engineering prototyping.`,
+                  photo: null
+                });
+
+                logs.push({
+                  id: 'log-citizen',
+                  date: problem?.reportedAt ? new Date(problem.reportedAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Submission Date',
+                  author: problem?.reportedByName || (typeof problem?.reportedBy === 'string' ? problem.reportedBy : problem?.reportedBy?.name) || 'Citizen Reporter',
+                  role: 'Citizen Reporter',
+                  title: 'Civic Grievance Submitted with Geotagged Photo Proof',
+                  desc: `Public report logged for "${title}" at ${locationText}. Tracked on transparent public ledger.`,
+                  photo: problem?.images?.[0] || null
+                });
+
+                return logs.map(up => {
+                  const isCitizen = up.role.toLowerCase().includes('citizen');
+                  const isUni = up.role.toLowerCase().includes('faculty') || up.role.toLowerCase().includes('mentor');
+                  return (
+                    <div key={up.id} className="bg-slate-50/80 border border-slate-200 rounded-2xl p-4 sm:p-5 space-y-3">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 pb-2 border-b border-slate-200/70">
+                        <div
+                          onClick={() => {
+                            if (isCitizen) handleCitizenClick(up.author);
+                            else if (isUni) handleUniversityClick(project?.universityName || 'MANIT Bhopal');
+                          }}
+                          className={`flex items-center gap-2 ${isCitizen || isUni ? 'cursor-pointer group/auth' : ''}`}
+                          title={isCitizen ? 'View Citizen Profile' : isUni ? 'View University Profile' : 'Institutional Official'}
+                        >
+                          <div className="w-7 h-7 rounded-full bg-emerald-600 text-white font-bold text-xs flex items-center justify-center">
+                            {up.author[0]}
+                          </div>
+                          <div>
+                            <span className={`font-bold text-xs text-slate-900 ${isCitizen || isUni ? 'group-hover/auth:text-emerald-700 underline decoration-emerald-300' : ''}`}>
+                              {up.author} {isCitizen || isUni ? '↗' : ''}
+                            </span>
+                            <span className="text-[10px] text-slate-400 ml-2">({up.role})</span>
+                          </div>
+                        </div>
+                        <span className="text-[11px] text-slate-400 font-medium">{up.date}</span>
                       </div>
-                    )}
-                  </div>
-                );
-              })}
+
+                      <div>
+                        <h4 className="text-xs sm:text-sm font-bold text-slate-900">{up.title}</h4>
+                        <p className="text-xs text-slate-600 mt-1 leading-relaxed">{up.desc}</p>
+                      </div>
+
+                      {up.photo && (
+                        <div className="pt-1">
+                          <img src={up.photo} alt="Proof" className="w-44 h-28 rounded-xl object-cover border border-slate-200 shadow-xs" />
+                        </div>
+                      )}
+                    </div>
+                  );
+                });
+              })()}
             </div>
           </div>
         )}
@@ -520,57 +566,15 @@ export default function ProjectDetailView({
         {activeTab === 'team' && (
           <div className="p-6 sm:p-8 space-y-6">
             <div className="pb-2 border-b border-slate-100">
-              <h3 className="text-sm font-bold text-slate-900 font-heading">Quad-Helix Collaboration Team</h3>
-              <p className="text-xs text-slate-500">The dedicated stakeholders turning this civic challenge into a reality. Click contributor profiles to view impact.</p>
+              <h3 className="text-sm font-bold text-slate-900 font-heading">Quad-Helix Collaboration Stakeholders</h3>
+              <p className="text-xs text-slate-500">The 4-pillar partnership (Citizen ➔ Government ➔ University ➔ Industry) driving ground resolution.</p>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               
-              {/* Faculty Mentor -> Clickable University Profile */}
+              {/* Pillar 1: Citizen Contributor */}
               <div
-                onClick={() => handleUniversityClick(project?.universityName || 'MANIT Bhopal')}
-                className="bg-slate-50 hover:bg-emerald-50/70 border border-slate-200 hover:border-emerald-300 rounded-2xl p-4 space-y-2 cursor-pointer transition group/card shadow-xs"
-                title="Click to view University Contributor Profile"
-              >
-                <div className="flex items-center gap-3">
-                  <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150" alt="Prof" className="w-12 h-12 rounded-full object-cover ring-2 ring-emerald-500/30" />
-                  <div>
-                    <div className="text-xs font-bold text-slate-900 group-hover/card:text-emerald-800 flex items-center gap-1">
-                      <span>Prof. Kumar</span>
-                      <span className="text-[10px] text-emerald-600">↗</span>
-                    </div>
-                    <div className="text-[10px] text-emerald-700 font-semibold">Faculty Mentor</div>
-                    <div className="text-[10px] text-slate-400">MANIT Bhopal</div>
-                  </div>
-                </div>
-                <p className="text-[11px] text-slate-500 pt-1">Oversees electrical architecture, student safety protocols, and municipal compliance.</p>
-                <div className="text-[10px] font-bold text-emerald-700 pt-1">View University Profile →</div>
-              </div>
-
-              {/* Student Lead -> Clickable Student Profile */}
-              <div
-                onClick={() => handleStudentClick('Rohan Nair', 'Student Lead & IoT Lead')}
-                className="bg-slate-50 hover:bg-indigo-50/70 border border-slate-200 hover:border-indigo-300 rounded-2xl p-4 space-y-2 cursor-pointer transition group/card shadow-xs"
-                title="Click to view Student Contributor Profile"
-              >
-                <div className="flex items-center gap-3">
-                  <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150" alt="Student Lead" className="w-12 h-12 rounded-full object-cover ring-2 ring-indigo-500/30" />
-                  <div>
-                    <div className="text-xs font-bold text-slate-900 group-hover/card:text-indigo-800 flex items-center gap-1">
-                      <span>Rohan Nair</span>
-                      <span className="text-[10px] text-indigo-600">↗</span>
-                    </div>
-                    <div className="text-[10px] text-indigo-700 font-semibold">Student Lead & IoT Lead</div>
-                    <div className="text-[10px] text-slate-400">MANIT Innovation Cell</div>
-                  </div>
-                </div>
-                <p className="text-[11px] text-slate-500 pt-1">Leads firmware programming, LoRa telemetry nodes, and field battery mounting.</p>
-                <div className="text-[10px] font-bold text-indigo-700 pt-1">View Student Profile →</div>
-              </div>
-
-              {/* Citizen Contributor -> Clickable Citizen Profile */}
-              <div
-                onClick={() => handleCitizenClick('Rahul Mishra')}
+                onClick={() => handleCitizenClick(problem?.reportedByName || 'Rahul Mishra')}
                 className="bg-slate-50 hover:bg-emerald-50/70 border border-slate-200 hover:border-emerald-300 rounded-2xl p-4 space-y-2 cursor-pointer transition group/card shadow-xs"
                 title="Click to view Citizen Contributor Profile"
               >
@@ -578,42 +582,128 @@ export default function ProjectDetailView({
                   <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150" alt="Citizen" className="w-12 h-12 rounded-full object-cover ring-2 ring-emerald-500/30" />
                   <div>
                     <div className="text-xs font-bold text-slate-900 group-hover/card:text-emerald-800 flex items-center gap-1">
-                      <span>Rahul Mishra</span>
+                      <span>{problem?.reportedByName || (typeof problem?.reportedBy === 'string' ? problem.reportedBy : problem?.reportedBy?.name) || 'Citizen Reporter'}</span>
                       <span className="text-[10px] text-emerald-600">↗</span>
                     </div>
-                    <div className="text-[10px] text-emerald-700 font-semibold">Citizen Contributor</div>
-                    <div className="text-[10px] text-slate-400">Ward 12 Resident</div>
+                    <div className="text-[10px] text-emerald-700 font-semibold">Citizen Grievance Originator</div>
+                    <div className="text-[10px] text-slate-400">{locationText}</div>
                   </div>
                 </div>
-                <p className="text-[11px] text-slate-500 pt-1">Identified problem, gave ground feedback, and validates night lighting quality.</p>
+                <p className="text-[11px] text-slate-500 pt-1">Identified problem, submitted geotagged proof, and validates solution quality.</p>
                 <div className="text-[10px] font-bold text-emerald-700 pt-1">View Citizen Profile →</div>
               </div>
 
-              {/* Government Official -> NOT clickable public profile */}
-              <div className="bg-slate-50/70 border border-slate-200 rounded-2xl p-4 space-y-2 opacity-90">
+              {/* Pillar 2: Government Authority */}
+              <div className={`rounded-2xl p-4 space-y-2 border ${isVerified || project || isSolved ? 'bg-slate-50 border-slate-200' : 'bg-amber-50/40 border-amber-200'}`}>
                 <div className="flex items-center gap-3">
-                  <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150" alt="Gov Officer" className="w-12 h-12 rounded-full object-cover ring-2 ring-blue-500/30" />
+                  <div className="w-12 h-12 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-sm ring-2 ring-blue-500/30">
+                    🏛️
+                  </div>
                   <div>
-                    <div className="text-xs font-bold text-slate-900">Anita Sharma</div>
-                    <div className="text-[10px] text-blue-700 font-semibold">Government Verification Lead</div>
-                    <div className="text-[10px] text-slate-400">Bhopal Municipal Corp</div>
+                    <div className="text-xs font-bold text-slate-900">
+                      {problem?.verification?.verifiedBy || (isVerified ? 'Anita Sharma' : 'Awaiting Municipal Officer')}
+                    </div>
+                    <div className="text-[10px] text-blue-700 font-semibold">Government Authority</div>
+                    <div className="text-[10px] text-slate-400">Municipal Corporation</div>
                   </div>
                 </div>
-                <p className="text-[11px] text-slate-500 pt-1">Authorized municipal permit, grid tap point, and fast-track clearance.</p>
-                <div className="text-[10px] font-bold text-slate-400 pt-1">Institutional Governance Role</div>
+                <p className="text-[11px] text-slate-500 pt-1">
+                  {isVerified || project || isSolved
+                    ? `Sanctioned ₹${(problem?.verification?.allocatedBudget || 150000).toLocaleString('en-IN')} municipal innovation grant.`
+                    : 'Problem is in official municipal queue. Officer inspection required to sanction grant.'}
+                </p>
+                <div className={`text-[10px] font-bold ${isVerified || project || isSolved ? 'text-emerald-700' : 'text-amber-700'} pt-1`}>
+                  {isVerified || project || isSolved ? '✓ Verified & Sanctioned' : '● Verification Pending'}
+                </div>
               </div>
 
-              {/* Industry Partner -> NOT clickable public profile */}
-              <div className="bg-slate-50/70 border border-slate-200 rounded-2xl p-4 space-y-2 opacity-90">
-                <div className="flex items-center gap-3">
-                  <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=150" alt="CSR Lead" className="w-12 h-12 rounded-full object-cover ring-2 ring-amber-500/30" />
-                  <div>
-                    <div className="text-xs font-bold text-slate-900">Amit Verma</div>
-                    <div className="text-[10px] text-amber-700 font-semibold">Industry CSR Partner</div>
-                    <div className="text-[10px] text-slate-400">Tata Sustainability CSR</div>
+              {/* Pillar 3: University Engineering Team */}
+              {project ? (
+                <>
+                  <div
+                    onClick={() => handleUniversityClick(project?.universityName || 'MANIT Bhopal')}
+                    className="bg-slate-50 hover:bg-emerald-50/70 border border-slate-200 hover:border-emerald-300 rounded-2xl p-4 space-y-2 cursor-pointer transition group/card shadow-xs"
+                    title="Click to view University Contributor Profile"
+                  >
+                    <div className="flex items-center gap-3">
+                      <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150" alt="Prof" className="w-12 h-12 rounded-full object-cover ring-2 ring-emerald-500/30" />
+                      <div>
+                        <div className="text-xs font-bold text-slate-900 group-hover/card:text-emerald-800 flex items-center gap-1">
+                          <span>Prof. Kumar</span>
+                          <span className="text-[10px] text-emerald-600">↗</span>
+                        </div>
+                        <div className="text-[10px] text-emerald-700 font-semibold">Faculty Mentor</div>
+                        <div className="text-[10px] text-slate-400">{project?.universityName || 'MANIT Bhopal'}</div>
+                      </div>
+                    </div>
+                    <p className="text-[11px] text-slate-500 pt-1">Oversees engineering architecture, lab testing protocols, and safety compliance.</p>
+                    <div className="text-[10px] font-bold text-emerald-700 pt-1">View University Profile →</div>
+                  </div>
+
+                  <div
+                    onClick={() => handleStudentClick(project?.teamLeader || 'Rohan Nair', 'Student Lead')}
+                    className="bg-slate-50 hover:bg-indigo-50/70 border border-slate-200 hover:border-indigo-300 rounded-2xl p-4 space-y-2 cursor-pointer transition group/card shadow-xs"
+                    title="Click to view Student Contributor Profile"
+                  >
+                    <div className="flex items-center gap-3">
+                      <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150" alt="Student Lead" className="w-12 h-12 rounded-full object-cover ring-2 ring-indigo-500/30" />
+                      <div>
+                        <div className="text-xs font-bold text-slate-900 group-hover/card:text-indigo-800 flex items-center gap-1">
+                          <span>{project?.teamLeader || 'Rohan Nair'}</span>
+                          <span className="text-[10px] text-indigo-600">↗</span>
+                        </div>
+                        <div className="text-[10px] text-indigo-700 font-semibold">Student Lead ({project?.teamName || 'Engineering Team'})</div>
+                        <div className="text-[10px] text-slate-400">Campus Innovation Cell</div>
+                      </div>
+                    </div>
+                    <p className="text-[11px] text-slate-500 pt-1">Leads student hardware fabrication, firmware assembly, and field testing.</p>
+                    <div className="text-[10px] font-bold text-indigo-700 pt-1">View Student Profile →</div>
+                  </div>
+                </>
+              ) : (
+                <div className="bg-slate-50 border border-dashed border-slate-300 rounded-2xl p-4 space-y-2">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-full bg-purple-100 text-purple-700 flex items-center justify-center font-bold text-sm">
+                      🎓
+                    </div>
+                    <div>
+                      <div className="text-xs font-bold text-slate-900">
+                        {isVerified ? 'Open in University Opportunities' : 'Awaiting Govt Approval'}
+                      </div>
+                      <div className="text-[10px] text-purple-700 font-semibold">University Innovation Hubs</div>
+                      <div className="text-[10px] text-slate-400">NITs / IITs / Engineering Colleges</div>
+                    </div>
+                  </div>
+                  <p className="text-[11px] text-slate-500 pt-1">
+                    {isVerified
+                      ? 'Approved by Municipal Authority! Student engineering teams can now adopt this project in the Opportunities marketplace.'
+                      : 'Locked for students until Government officers approve on-site feasibility.'}
+                  </p>
+                  <div className="text-[10px] font-bold text-slate-400 pt-1">
+                    {isVerified ? '🚀 Ready for Adoption' : '🔒 Adoption Locked'}
                   </div>
                 </div>
-                <p className="text-[11px] text-slate-500 pt-1">Provided technical review and ₹75,000 grant for smart solar battery modules.</p>
+              )}
+
+              {/* Pillar 4: Industry / CSR Partner */}
+              <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-2 opacity-90">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-sm">
+                    🏢
+                  </div>
+                  <div>
+                    <div className="text-xs font-bold text-slate-900">
+                      {project ? 'Amit Verma (CSR Lead)' : 'Corporate CSR Partner'}
+                    </div>
+                    <div className="text-[10px] text-amber-700 font-semibold">Industry & CSR Sponsorship</div>
+                    <div className="text-[10px] text-slate-400">{project ? 'Tata Sustainability CSR' : 'Eligible for CSR Matching Grant'}</div>
+                  </div>
+                </div>
+                <p className="text-[11px] text-slate-500 pt-1">
+                  {project
+                    ? 'Provided technical review and ₹75,000 grant for smart solar battery modules.'
+                    : 'Provides corporate sponsorship and component matching grants once university project starts.'}
+                </p>
                 <div className="text-[10px] font-bold text-slate-400 pt-1">Corporate CSR Partner</div>
               </div>
 
@@ -630,74 +720,90 @@ export default function ProjectDetailView({
                 <p className="text-xs text-slate-500">100% transparent public ledger of all components, materials, and field expenses.</p>
               </div>
 
-              <div className="flex items-center gap-3">
-                <span className="text-xs font-extrabold text-slate-900 bg-slate-100 px-3 py-1.5 rounded-xl">
-                  Total Budget: ₹1,80,000
-                </span>
-                <span className="text-xs font-extrabold text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-xl border border-emerald-200">
-                  Total Utilized: ₹1,55,900
-                </span>
-              </div>
+              {project && expenses.length > 0 && (
+                <div className="flex items-center gap-3">
+                  <span className="text-xs font-extrabold text-slate-900 bg-slate-100 px-3 py-1.5 rounded-xl">
+                    Total Budget: ₹1,80,000
+                  </span>
+                  <span className="text-xs font-extrabold text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-xl border border-emerald-200">
+                    Total Utilized: ₹1,55,900
+                  </span>
+                </div>
+              )}
             </div>
 
-            {/* Products & Expenses Table */}
-            <div className="overflow-x-auto border border-slate-200 rounded-2xl">
-              <table className="w-full text-left text-xs text-slate-700">
-                <thead className="bg-slate-50 text-slate-500 uppercase text-[10px] font-bold border-b border-slate-200">
-                  <tr>
-                    <th className="p-3.5 pl-4">Product / Component Description</th>
-                    <th className="p-3.5">Category</th>
-                    <th className="p-3.5 text-center">Qty</th>
-                    <th className="p-3.5">Vendor</th>
-                    <th className="p-3.5 font-bold">Total (₹)</th>
-                    <th className="p-3.5 pr-4 text-center">Receipt Proof</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 font-medium">
-                  {[
-                    { item: 'Smart Auto-Dimming LED Luminaire Fixture (60W IP66)', cat: 'Lighting & Electronics', qty: '12 pcs', vendor: 'Havells Industrial', amount: 38400, url: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600' },
-                    { item: '12V 100Ah LiFePO4 Battery Pack with Smart BMS', cat: 'Energy Storage', qty: '4 units', vendor: 'Waaree Energies', amount: 48000, url: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600' },
-                    { item: '330W Mono PERC Solar PV Panels', cat: 'Renewable Power', qty: '4 units', vendor: 'Tata Power Solar', amount: 26000, url: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600' },
-                    { item: 'LoRaWAN Ambient Light & Fault Telemetry Module', cat: 'IoT Microcontrollers', qty: '6 units', vendor: 'Robu.in Electronics', amount: 14500, url: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600' },
-                    { item: 'Galvanized Steel Pole Mounting Brackets & Fasteners', cat: 'Civil & Structural', qty: '12 sets', vendor: 'Bhopal Steel Fabricators', amount: 9800, url: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600' },
-                    { item: 'Underground Armored Copper Cabling (50m roll)', cat: 'Electrical Cabling', qty: '2 rolls', vendor: 'Polycab Cables Ltd', amount: 7200, url: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600' },
-                    { item: 'Field Labor, Trenching & Safety Cones', cat: 'Labor & Field Logistics', qty: '1 lot', vendor: 'Authorized Municipal Contractor', amount: 12000, url: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600' }
-                  ].map((prod, idx) => (
-                    <tr key={idx} className="hover:bg-slate-50 transition">
-                      <td className="p-3.5 pl-4">
-                        <div className="font-bold text-slate-900">{prod.item}</div>
-                        <div className="text-[10px] text-slate-400">Verified product spec</div>
-                      </td>
-                      <td className="p-3.5">
-                        <span className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 text-[10px] font-bold border border-slate-200">
-                          {prod.cat}
-                        </span>
-                      </td>
-                      <td className="p-3.5 text-center font-bold text-slate-800">
-                        {prod.qty}
-                      </td>
-                      <td className="p-3.5 text-slate-700 font-semibold">
-                        {prod.vendor}
-                      </td>
-                      <td className="p-3.5 font-extrabold text-emerald-800 text-xs sm:text-sm">
-                        ₹{prod.amount.toLocaleString('en-IN')}
-                      </td>
-                      <td className="p-3.5 pr-4 text-center">
-                        <a
-                          href={prod.url}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 text-[11px] font-bold transition border border-emerald-200"
-                        >
-                          <span>Invoice</span>
-                          <ExternalLink className="w-3 h-3" />
-                        </a>
-                      </td>
+            {/* If project has active expenses, show the table. Otherwise show clean status state */}
+            {project && expenses.length > 0 ? (
+              <div className="overflow-x-auto border border-slate-200 rounded-2xl">
+                <table className="w-full text-left text-xs text-slate-700">
+                  <thead className="bg-slate-50 text-slate-500 uppercase text-[10px] font-bold border-b border-slate-200">
+                    <tr>
+                      <th className="p-3.5 pl-4">Product / Component Description</th>
+                      <th className="p-3.5">Category</th>
+                      <th className="p-3.5 text-center">Qty</th>
+                      <th className="p-3.5">Vendor</th>
+                      <th className="p-3.5 font-bold">Total (₹)</th>
+                      <th className="p-3.5 pr-4 text-center">Receipt Proof</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 font-medium">
+                    {expenses.map((prod, idx) => (
+                      <tr key={idx} className="hover:bg-slate-50 transition">
+                        <td className="p-3.5 pl-4">
+                          <div className="font-bold text-slate-900">{prod.item || prod.description || 'Hardware Component'}</div>
+                          <div className="text-[10px] text-slate-400">Verified product spec</div>
+                        </td>
+                        <td className="p-3.5">
+                          <span className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 text-[10px] font-bold border border-slate-200">
+                            {prod.cat || prod.category || 'Hardware'}
+                          </span>
+                        </td>
+                        <td className="p-3.5 text-center font-bold text-slate-800">
+                          {prod.qty || '1 unit'}
+                        </td>
+                        <td className="p-3.5 text-slate-700 font-semibold">
+                          {prod.vendor || 'Authorized Supplier'}
+                        </td>
+                        <td className="p-3.5 font-extrabold text-emerald-800 text-xs sm:text-sm">
+                          ₹{(prod.amount || 0).toLocaleString('en-IN')}
+                        </td>
+                        <td className="p-3.5 pr-4 text-center">
+                          <a
+                            href={prod.url || "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600"}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 text-[11px] font-bold transition border border-emerald-200"
+                          >
+                            <span>Invoice</span>
+                            <ExternalLink className="w-3 h-3" />
+                          </a>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="text-center py-12 px-4 bg-slate-50 rounded-2xl border border-dashed border-slate-200 space-y-3">
+                <div className="w-12 h-12 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center mx-auto">
+                  <Receipt className="w-6 h-6" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-bold text-slate-900 font-heading">
+                    {isPending ? 'No Expenses Incurred (Awaiting Government Verification)' : isVerified ? 'Awaiting University Team Adoption' : 'No Expenses Logged Yet'}
+                  </h4>
+                  <p className="text-xs text-slate-500 max-w-md mx-auto mt-1 leading-relaxed">
+                    {isPending
+                      ? 'This problem is in the Municipal review queue. Once approved and adopted by a University Engineering Team, all component invoices, vendor receipts, and hardware bills of materials (BOM) will be transparently audited here.'
+                      : 'Government has approved this problem! As soon as a student innovation team adopts this challenge and begins component procurement, live invoices and hardware BOM will be published here.'}
+                  </p>
+                </div>
+                <div className="inline-flex items-center gap-2 text-xs font-bold text-emerald-800 bg-emerald-50 px-3.5 py-1.5 rounded-xl border border-emerald-200 mt-2">
+                  <span>Estimated Grant Allocation:</span>
+                  <span className="font-extrabold">{problem?.aiAnalysis?.estimatedBudget || '₹1,20,000 - ₹1,80,000'}</span>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
