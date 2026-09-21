@@ -6,7 +6,7 @@ export const seedUsers = [
     name: "Rahul Mishra",
     email: "rahul.mishra@gmail.com",
     role: "citizen",
-    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
+    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150",
     phone: "+91 98765 43210",
     city: "Bhopal",
     state: "Madhya Pradesh",
@@ -17,7 +17,7 @@ export const seedUsers = [
     name: "Priya Sharma",
     email: "priya.sharma@gmail.com",
     role: "citizen",
-    avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&auto=format&fit=crop&q=80",
+    avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150",
     phone: "+91 98765 88990",
     city: "Bhopal",
     state: "Madhya Pradesh",
@@ -28,7 +28,7 @@ export const seedUsers = [
     name: "Anita Sharma",
     email: "anita.sharma@gov.in",
     role: "government",
-    avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80",
+    avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150",
     designation: "Municipal Verification Officer & Smart City Lead",
     department: "Bhopal Municipal Corporation",
     jurisdiction: "Bhopal Smart City Cell",
@@ -40,10 +40,10 @@ export const seedUsers = [
     name: "Prof. Kumar",
     email: "prof.kumar@manit.ac.in",
     role: "university",
-    institution: "MANIT Bhopal",
+    institution: "MANIT Bhopal Innovation Hub",
     department: "Electrical & IoT Innovation Cell",
-    teamName: "MANIT Civic Innovation Hub",
-    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80",
+    teamName: "MANIT IoT & Energy Innovation Team",
+    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150",
     studentLead: "Rohan Nair",
     teamSize: 6,
     city: "Bhopal",
@@ -56,7 +56,7 @@ export const seedUsers = [
     role: "industry",
     organization: "Tata Sustainability & CSR Initiatives",
     designation: "CSR Head & Tech Incubation Lead",
-    avatar: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=150&auto=format&fit=crop&q=80",
+    avatar: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=150",
     sector: "Clean Energy, Water & Urban Infra",
     fundsCommitted: "₹ 45,00,000",
     city: "Bhopal",
@@ -67,7 +67,7 @@ export const seedUsers = [
     name: "AwaazGram Central Administrator",
     email: "admin@awaazgram.gov.in",
     role: "admin",
-    avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&auto=format&fit=crop&q=80",
+    avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150",
     designation: "National Civic Coordinator"
   }
 ];
@@ -75,39 +75,33 @@ export const seedUsers = [
 export const seedProblems = [
   {
     id: "ag1001",
-    title: "Broken Street Light",
+    title: "Broken Street Light & Dark Walking Corridor",
     description: "Main arterial road lighting is broken across 12 consecutive poles in Ward 12, causing night accidents and safety hazards for commuters.",
-    category: "Infrastructure & Street Lighting",
+    category: "Street Lighting & Electrical",
     location: {
-      address: "Ward 12, Shivaji Nagar",
+      address: "Ward 12, Link Road Junction",
       city: "Bhopal",
       state: "Madhya Pradesh",
-      pincode: "462016",
-      lat: 23.2332,
-      lng: 77.4343
+      pincode: "462003",
+      lat: 23.2599,
+      lng: 77.4126
     },
     images: [
-      "https://images.unsplash.com/photo-1547683905-f686c993aae5?w=800&auto=format&fit=crop&q=80"
+      "https://images.unsplash.com/photo-1509228468518-180dd4864904?w=600"
     ],
-    reportedBy: {
-      id: "user-cit-1",
-      name: "Rahul Mishra",
-      phone: "+91 98765 43210"
-    },
-    reportedAt: "2026-05-10T09:30:00Z",
+    reportedBy: "Rahul Mishra",
+    reportedByName: "Rahul Mishra",
+    reportedAt: "2026-05-10T09:15:00Z",
     status: "in_progress",
-    upvotes: 142,
-    upvotedBy: ["user-cit-1", "user-cit-2"],
+    upvotes: 42,
+    projectId: "proj-201",
     aiAnalysis: {
-      category: "Infrastructure & Smart Lighting",
       urgency: "High",
-      impactScore: 85,
+      category: "Street Lighting & Electrical",
       feasibilityScore: 92,
-      recommendedDepartment: "Electrical & IoT Engineering Teams",
-      summary: "High night collision hazard. Recommends smart auto-dimming LED luminaire fixtures with solar LiFePO4 battery storage.",
-      estimatedBudget: "₹ 1,50,000 - ₹ 1,80,000",
-      estimatedTimelineWeeks: 4,
-      relevantSkills: ["Power Electronics", "LiFePO4 BMS", "LoRa Telemetry"]
+      estimatedBudget: "₹1,80,000",
+      recommendedDepartment: "Electrical & IoT Innovation Lab",
+      summary: "High hazard corridor requiring solar-assisted smart auto-dimming LED luminaires and LiFePO4 battery modules with LoRa fault alerts."
     },
     verification: {
       verifiedBy: "Anita Sharma",
@@ -116,276 +110,228 @@ export const seedProblems = [
       remarks: "Critical safety hazard. Grant sanctioned for MANIT engineering team deployment.",
       allocatedBudget: 180000,
       priority: "High"
-    },
-    projectId: "proj-201"
+    }
   },
   {
     id: "ag1002",
-    title: "Garbage Dumping & Waste Overflow",
-    description: "Open illegal garbage dumping ground near residential apartments causing severe odor, pest breeding, and health risk.",
-    category: "Solid Waste & Environment",
+    title: "Hazardous Open Pothole at Main Market Intersection",
+    description: "Deep potholes on the four-way intersection near City Center causing vehicle damage and waterlogging during rains.",
+    category: "Roads & Pothole Hazards",
     location: {
-      address: "Sector 5, MP Nagar",
-      city: "Bhopal",
-      state: "Madhya Pradesh",
-      pincode: "462011",
-      lat: 23.2315,
-      lng: 77.4320
+      address: "City Center Market Chowk",
+      city: "Ranchi",
+      state: "Jharkhand",
+      pincode: "834001",
+      lat: 23.3441,
+      lng: 85.3096
     },
     images: [
-      "https://images.unsplash.com/photo-1605600659873-d808a13e4d2a?w=800&auto=format&fit=crop&q=80"
+      "https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?w=600"
     ],
-    reportedBy: {
-      id: "user-cit-1",
-      name: "Rahul Mishra",
-      phone: "+91 98765 43210"
-    },
-    reportedAt: "2026-05-08T11:00:00Z",
+    reportedBy: "Sunita Soren",
+    reportedByName: "Sunita Soren",
+    reportedAt: "2026-05-12T14:20:00Z",
     status: "pending_verification",
-    upvotes: 98,
-    upvotedBy: ["user-cit-1"],
+    upvotes: 28,
     aiAnalysis: {
-      category: "Solid Waste & Circular Economy",
       urgency: "Medium",
-      impactScore: 78,
+      category: "Roads & Pothole Hazards",
       feasibilityScore: 88,
-      recommendedDepartment: "Environmental Engineering / Robotics",
-      summary: "Public health concern. Recommends smart camera-monitored waste segregation bins and bio-composting unit.",
-      estimatedBudget: "₹ 90,000 - ₹ 1,40,000",
-      estimatedTimelineWeeks: 3,
-      relevantSkills: ["Computer Vision", "Bio-digestion", "Smart Bins"]
+      estimatedBudget: "₹95,000",
+      recommendedDepartment: "Civil & Structural Engineering Dept",
+      summary: "Surface asphalt degradation requiring cold-mix bituminous patch and geo-textile drainage reinforcement."
     }
   },
   {
     id: "ag1003",
-    title: "Water Logging near Commercial Junction",
-    description: "Heavy water logging during rains blocking transit near the main shopping mall area.",
-    category: "Drainage & Flood Resiliency",
+    title: "Drinking Water Fluoride Contamination in Handpumps",
+    description: "High levels of fluoride and iron detected in community tube-wells causing dental and skeletal fluorosis among residents.",
+    category: "Drainage & Clean Water Supply",
     location: {
-      address: "Near City Mall, Hoshangabad Road",
-      city: "Bhopal",
-      state: "Madhya Pradesh",
-      pincode: "462026",
-      lat: 23.1989,
-      lng: 77.4421
+      address: "Tupudana Village, Sector 4",
+      city: "Ranchi",
+      state: "Jharkhand",
+      pincode: "834003",
+      lat: 23.2847,
+      lng: 85.3131
     },
     images: [
-      "https://images.unsplash.com/photo-1547683905-f686c993aae5?w=800&auto=format&fit=crop&q=80"
+      "https://images.unsplash.com/photo-1584467735815-f778f274e296?w=600"
     ],
-    reportedBy: {
-      id: "user-cit-1",
-      name: "Rahul Mishra",
-      phone: "+91 98765 43210"
-    },
-    reportedAt: "2026-05-02T16:20:00Z",
-    status: "solved",
-    upvotes: 184,
-    upvotedBy: ["user-cit-1"],
+    reportedBy: "Amit Patel",
+    reportedByName: "Amit Patel",
+    reportedAt: "2026-05-08T11:00:00Z",
+    status: "verified",
+    upvotes: 67,
     aiAnalysis: {
-      category: "Urban Hydrology & Drainage",
-      urgency: "High",
-      impactScore: 92,
-      feasibilityScore: 90,
-      recommendedDepartment: "Civil & Environmental Engineering",
-      summary: "Drainage blockage resolved by modular siphon bypass and clear storm runoff channels.",
-      estimatedBudget: "₹ 1,20,000",
-      estimatedTimelineWeeks: 3,
-      relevantSkills: ["Hydraulics", "Civil Precast"]
+      urgency: "Critical",
+      category: "Drainage & Clean Water Supply",
+      feasibilityScore: 94,
+      estimatedBudget: "₹1,45,000",
+      recommendedDepartment: "Chemical & Environmental Engineering Lab",
+      summary: "Deployment of multi-stage activated alumina fluoride filtration column with solar UV disinfection unit."
+    },
+    verification: {
+      verifiedBy: "Anita Sharma",
+      verifiedAt: "2026-05-09T16:00:00Z",
+      status: "verified",
+      remarks: "Approved for university innovation adoption.",
+      allocatedBudget: 145000,
+      priority: "Critical"
     }
   },
   {
     id: "ag1004",
-    title: "Water Supply Issue",
-    description: "Contaminated ground water and low pipeline pressure affecting over 500 residents.",
-    category: "Water Quality & Public Health",
+    title: "Solar Microgrid Failure in Tribal Community Center",
+    description: "Community center solar panels and battery inverter have been non-functional for 3 weeks, leaving digital health clinic without power.",
+    category: "Street Lighting & Electrical",
     location: {
-      address: "Sector 8, Arera Colony",
-      city: "Bhopal",
-      state: "Madhya Pradesh",
-      pincode: "462016",
-      lat: 23.2150,
-      lng: 77.4380
+      address: "Angara Block, Rural Health Sub-Center",
+      city: "Ranchi",
+      state: "Jharkhand",
+      pincode: "835103",
+      lat: 23.4147,
+      lng: 85.5298
     },
     images: [
-      "https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=800&auto=format&fit=crop&q=80"
+      "https://images.unsplash.com/photo-1508873696983-2df5293cb32f?w=600"
     ],
-    reportedBy: {
-      id: "user-cit-2",
-      name: "Priya Sharma",
-      phone: "+91 98765 88990"
-    },
-    reportedAt: "2026-05-06T10:00:00Z",
+    reportedBy: "Birsa Munda Ward",
+    reportedByName: "Birsa Munda Ward",
+    reportedAt: "2026-05-05T08:30:00Z",
     status: "verified",
-    upvotes: 120,
-    upvotedBy: ["user-cit-2"],
+    upvotes: 54,
     aiAnalysis: {
-      category: "Water Treatment & IoT Purification",
-      urgency: "Medium",
-      impactScore: 88,
-      feasibilityScore: 85,
-      recommendedDepartment: "Chemical & Environmental Engineering",
-      summary: "Multi-stage UV and carbon filtration kiosk recommended with automated telemetry.",
-      estimatedBudget: "₹ 1,40,000",
-      estimatedTimelineWeeks: 4,
-      relevantSkills: ["Membrane Filtration", "IoT Purity Sensors"]
+      urgency: "High",
+      category: "Street Lighting & Electrical",
+      feasibilityScore: 91,
+      estimatedBudget: "₹85,000",
+      recommendedDepartment: "Renewable Energy & Power Electronics Lab",
+      summary: "MPPT solar charge controller replacement with IoT telemetry and battery cell balancing unit."
+    },
+    verification: {
+      verifiedBy: "Anita Sharma",
+      verifiedAt: "2026-05-06T11:00:00Z",
+      status: "verified",
+      remarks: "Priority energy restoration sanctioned.",
+      allocatedBudget: 85000,
+      priority: "High"
     }
   },
   {
     id: "ag1005",
-    title: "School Infrastructure & Classroom Repairs",
-    description: "Government primary school building has broken roof slabs and damaged electric wiring, affecting 300+ students.",
-    category: "Education & Public Safety",
+    title: "Culvert Foundation Soil Erosion on Hundru Link Road",
+    description: "Monsoon soil runoff has undermined the bridge culvert foundation, posing bridge collapse risk for school buses.",
+    category: "Roads & Infrastructure",
     location: {
-      address: "Ward 15, Govindpura",
-      city: "Bhopal",
-      state: "Madhya Pradesh",
-      pincode: "462023",
-      lat: 23.2500,
-      lng: 77.4600
+      address: "Hundru Falls Rural Link Road",
+      city: "Ranchi",
+      state: "Jharkhand",
+      pincode: "835103",
+      lat: 23.4475,
+      lng: 85.6543
     },
     images: [
-      "https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=800&auto=format&fit=crop&q=80"
+      "https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?w=600"
     ],
-    reportedBy: {
-      id: "user-cit-2",
-      name: "Priya Sharma",
-      phone: "+91 98765 88990"
-    },
-    reportedAt: "2026-05-07T12:00:00Z",
+    reportedBy: "Priya Sharma",
+    reportedByName: "Priya Sharma",
+    reportedAt: "2026-05-01T16:45:00Z",
     status: "verified",
-    upvotes: 145,
-    upvotedBy: ["user-cit-1", "user-cit-2"],
+    upvotes: 39,
     aiAnalysis: {
-      category: "Structural Safety & Solar STEM",
-      urgency: "Medium",
-      impactScore: 84,
-      feasibilityScore: 90,
-      recommendedDepartment: "Civil & Structural Engineering",
-      summary: "Roof waterproofing, wiring overhaul, and rooftop solar micro-grid.",
-      estimatedBudget: "₹ 1,10,000",
-      estimatedTimelineWeeks: 4,
-      relevantSkills: ["Structural Civil", "Solar Kiosk"]
+      urgency: "Critical",
+      category: "Roads & Infrastructure",
+      feasibilityScore: 89,
+      estimatedBudget: "₹2,10,000",
+      recommendedDepartment: "Civil & Geo-technical Engineering Lab",
+      summary: "Gabion wall reinforcement and reinforced concrete culvert apron with drainage weep holes."
+    },
+    verification: {
+      verifiedBy: "Anita Sharma",
+      verifiedAt: "2026-05-03T10:00:00Z",
+      status: "verified",
+      remarks: "Bridge culvert safety clearance approved.",
+      allocatedBudget: 210000,
+      priority: "Critical"
     }
   },
   {
     id: "ag1006",
-    title: "Smart Waste Management",
-    description: "Autonomous smart bin monitoring and segregation network across city commercial sectors.",
-    category: "Solid Waste & IoT",
+    title: "Unregulated Solid Waste Overflow near Community Market",
+    description: "Bio-hazard and open waste dumping overflowing into drainage channels near daily market.",
+    category: "Waste Management & Sanitation",
     location: {
-      address: "Commercial Hub, Bhopal",
-      city: "Bhopal",
-      state: "Madhya Pradesh",
-      pincode: "462011",
-      lat: 23.2350,
-      lng: 77.4350
+      address: "Daily Vegetable Market Chowk, Sector 2",
+      city: "Ranchi",
+      state: "Jharkhand",
+      pincode: "834002",
+      lat: 23.3601,
+      lng: 85.3250
     },
     images: [
-      "https://images.unsplash.com/photo-1605600659873-d808a13e4d2a?w=800&auto=format&fit=crop&q=80"
+      "https://images.unsplash.com/photo-1605600659908-0ef719419d41?w=600"
     ],
-    reportedBy: {
-      id: "user-cit-1",
-      name: "Rahul Mishra",
-      phone: "+91 98765 43210"
-    },
-    reportedAt: "2026-05-04T09:00:00Z",
-    status: "in_progress",
-    upvotes: 110,
-    upvotedBy: ["user-cit-1"],
+    reportedBy: "Vikas Sinha",
+    reportedByName: "Vikas Sinha",
+    reportedAt: "2026-05-03T12:00:00Z",
+    status: "verified",
+    upvotes: 35,
     aiAnalysis: {
-      category: "Smart Waste & IoT",
-      urgency: "Medium",
-      impactScore: 82,
-      feasibilityScore: 89,
-      recommendedDepartment: "NIT Bhopal Engineering Team",
-      summary: "Ultrasonic fill-level sensors and cloud-routed collection scheduling.",
-      estimatedBudget: "₹ 1,20,000",
-      estimatedTimelineWeeks: 5,
-      relevantSkills: ["IoT Sensors", "Cloud Logistics"]
-    }
-  },
-  {
-    id: "ag1007",
-    title: "Solar Street Lighting",
-    description: "Off-grid solar lighting corridor along dark peripheral ring road.",
-    category: "Renewable Energy & Infrastructure",
-    location: {
-      address: "Outer Bypass Road, Bhopal",
-      city: "Bhopal",
-      state: "Madhya Pradesh",
-      pincode: "462030",
-      lat: 23.2700,
-      lng: 77.4100
-    },
-    images: [
-      "https://images.unsplash.com/photo-1509391365360-2e959784a276?w=800&auto=format&fit=crop&q=80"
-    ],
-    reportedBy: {
-      id: "user-cit-1",
-      name: "Rahul Mishra",
-      phone: "+91 98765 43210"
-    },
-    reportedAt: "2026-05-03T14:00:00Z",
-    status: "in_progress",
-    upvotes: 160,
-    upvotedBy: ["user-cit-1"],
-    aiAnalysis: {
-      category: "Renewable Energy",
       urgency: "High",
-      impactScore: 90,
-      feasibilityScore: 88,
-      recommendedDepartment: "VIT Bhopal Engineering Team",
-      summary: "Bifacial solar modules and integrated PIR motion dimmer controls.",
-      estimatedBudget: "₹ 1,60,000",
-      estimatedTimelineWeeks: 4,
-      relevantSkills: ["Solar PV", "PIR Motion Controls"]
+      category: "Waste Management & Sanitation",
+      feasibilityScore: 93,
+      estimatedBudget: "₹75,000",
+      recommendedDepartment: "Urban Sanitation & Smart Waste Hub",
+      summary: "Automated ultrasonic fill-level telemetry bins and community organic bio-composting unit."
+    },
+    verification: {
+      verifiedBy: "Anita Sharma",
+      verifiedAt: "2026-05-04T15:00:00Z",
+      status: "verified",
+      remarks: "Smart waste bin prototype sanctioned.",
+      allocatedBudget: 75000,
+      priority: "High"
     }
   },
   {
     id: "ag1008",
-    title: "Clean Water Initiative",
-    description: "Solar-powered community water purification and ATM dispensing unit.",
-    category: "Water & Sanitation",
+    title: "Clean Water ATM & Automated RO Purification Unit",
+    description: "Installation of community water ATM with RFID dispenser providing 5000L daily pure drinking water.",
+    category: "Drainage & Clean Water Supply",
     location: {
-      address: "Community Centre, Ward 8, Bhopal",
-      city: "Bhopal",
-      state: "Madhya Pradesh",
-      pincode: "462016",
-      lat: 23.2200,
-      lng: 77.4400
+      address: "Sector 4 Market Area",
+      city: "Bokaro",
+      state: "Jharkhand",
+      pincode: "827004",
+      lat: 23.6693,
+      lng: 86.1511
     },
     images: [
-      "https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=800&auto=format&fit=crop&q=80"
+      "https://images.unsplash.com/photo-1541888946425-d0fbb18f15f6?w=600"
     ],
-    reportedBy: {
-      id: "user-cit-2",
-      name: "Priya Sharma",
-      phone: "+91 98765 88990"
-    },
-    reportedAt: "2026-05-01T08:00:00Z",
-    status: "in_progress",
-    upvotes: 230,
-    upvotedBy: ["user-cit-2"],
+    reportedBy: "Rahul Mishra",
+    reportedByName: "Rahul Mishra",
+    reportedAt: "2026-04-20T10:00:00Z",
+    status: "solved",
+    upvotes: 89,
+    projectId: "proj-202",
     aiAnalysis: {
-      category: "Clean Water Tech",
-      urgency: "High",
-      impactScore: 95,
-      feasibilityScore: 86,
-      recommendedDepartment: "MANIT Bhopal Innovation Hub",
-      summary: "Automated reverse osmosis with mineral remineralization stage.",
-      estimatedBudget: "₹ 1,90,000",
-      estimatedTimelineWeeks: 6,
-      relevantSkills: ["RO Filtration", "RFID Dispenser"]
+      urgency: "Medium",
+      category: "Drainage & Clean Water Supply",
+      feasibilityScore: 95,
+      estimatedBudget: "₹1,90,000",
+      recommendedDepartment: "Environmental & Mechanical Engineering Lab",
+      summary: "Multi-stage RO purification unit with RFID card dispenser and live TDS sensor cloud upload."
     },
     verification: {
       verifiedBy: "Anita Sharma",
-      verifiedAt: "2026-05-02T10:00:00Z",
+      verifiedAt: "2026-04-22T11:00:00Z",
       status: "verified",
       remarks: "Sanctioned for community deployment.",
       allocatedBudget: 190000,
       priority: "High"
-    },
-    projectId: "proj-202"
+    }
   }
 ];
 
@@ -394,365 +340,61 @@ export const seedProjects = [
     id: "proj-201",
     problemId: "ag1001",
     title: "Smart Street Light Automation & Solar Battery Node",
-    universityId: "user-uni-1",
-    universityName: "College of Engineering Pune (COEP Tech)",
-    teamName: "Team Jaltarang Innovation Hub",
-    studentLead: "Aakash Deshmukh",
-    facultyMentor: "Prof. Arvind Rao",
-    teamMembers: ["Aakash Deshmukh", "Tanvi Joshi", "Rahul Patil", "Sneha Kadam", "Omkar Shinde"],
-    status: "in_progress", // 'accepted', 'in_progress', 'testing', 'solved'
+    universityName: "MANIT Bhopal Innovation Hub",
+    teamName: "MANIT IoT & Energy Innovation Team",
+    studentLead: "Rohan Nair",
+    facultyMentor: "Prof. Kumar",
+    teamMembers: ["Rohan Nair", "Priya Verma", "Amit Patel", "Sneha Rao", "Karan Singh"],
+    status: "in_progress",
     progressPercentage: 65,
     startedAt: "2026-08-15T10:00:00Z",
-    targetCompletionDate: "2026-10-05T00:00:00Z",
-    industryPledges: [
-      {
-        id: "pledge-1",
-        industryId: "user-ind-2",
-        industryName: "Tech Mahindra Makers Lab",
-        contactPerson: "Sunita Roy",
-        pledgeType: "Mentorship & IoT Hardware",
-        amountPledged: 75000,
-        hardwareSupplied: "10x Industrial LoRaWAN Level Sensors, Edge Gateway, Cloud Credits",
-        pledgedAt: "2026-08-20T11:30:00Z"
-      }
-    ],
-    milestones: [
-      {
-        id: "m-1",
-        title: "Site Topographical Survey & Hydraulic Flow Simulation",
-        description: "Mapped 450m elevation profile and calibrated monsoon peak volume model in ANSYS Fluent.",
-        status: "completed",
-        completedAt: "2026-08-28T18:00:00Z",
-        photoProof: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=800&auto=format&fit=crop&q=80"
-      },
-      {
-        id: "m-2",
-        title: "Modular Self-Cleaning Trash-Rack & Siphon Prototype Fabricated",
-        description: "Fabricated stainless steel counter-weighted debris deflector and tested 8-inch siphonic pipe draft.",
-        status: "completed",
-        completedAt: "2026-09-08T17:00:00Z",
-        photoProof: "https://images.unsplash.com/photo-1581092335397-9583fe92d232?w=800&auto=format&fit=crop&q=80"
-      },
-      {
-        id: "m-3",
-        title: "On-Site Installation & Telemetry Integration",
-        description: "Deploying the modular unit into Katraj drain junction with real-time level transmission to Municipal Dashboard.",
-        status: "in_progress",
-        completedAt: null,
-        photoProof: null
-      },
-      {
-        id: "m-4",
-        title: "Monsoon Flow Stress Test & Final Handover to Municipal Corp",
-        description: "Live validation under heavy rainfall and official sign-off with Ward 38 Corporator.",
-        status: "pending",
-        completedAt: null,
-        photoProof: null
-      }
-    ],
-    updatesTimeline: [
-      {
-        id: "up-1",
-        date: "2026-08-20T12:00:00Z",
-        author: "Prof. Arvind Rao",
-        role: "Faculty Mentor",
-        title: "Industry Sponsorship Onboarded",
-        content: "Tech Mahindra Makers Lab visited COEP campus and officially pledged ₹75,000 worth IoT micro-controllers and cloud dashboard access.",
-        photos: []
-      },
-      {
-        id: "up-2",
-        date: "2026-09-08T18:30:00Z",
-        author: "Aakash Deshmukh",
-        role: "Student Lead",
-        title: "Prototype 1 Passed Hydraulic Flume Testing",
-        content: "Our automatic counter-weight gate blocked 96% of solid plastic debris without manual operator intervention during high volume water flow tests in the civil lab.",
-        photos: ["https://images.unsplash.com/photo-1581092335397-9583fe92d232?w=800&auto=format&fit=crop&q=80"]
-      }
-    ],
     allocatedBudget: 180000,
-    totalExpenses: 104500,
+    totalExpenses: 155900,
+    milestones: [
+      { id: "m-1", title: "Corridor Illuminance & Solar Irradiance Survey", status: "completed", description: "Mapped 12 broken poles and simulated 60W LED luminaire lumen output." },
+      { id: "m-2", title: "LiFePO4 Solar Battery & BMS Prototype Fabricated", status: "completed", description: "Fabricated 4 units of 12V 100Ah battery enclosure with auto-dimming circuitry." },
+      { id: "m-3", title: "On-Site Installation & LoRaWAN Node Integration", status: "in_progress", description: "Deploying pole mounts and testing night telemetry to municipal dashboard." },
+      { id: "m-4", title: "Final Handover & Ground Impact Sign-off", status: "pending", description: "Validation under heavy weather and sign-off with municipal engineer." }
+    ],
     solutionDetails: {
-      summary: "Automated mechanical trash-screen combined with high-flow dual siphons to divert flood surges into retention pond.",
-      techStack: ["SolidWorks", "LoRaWAN Water Level Sensors", "ESP32 micro-controllers", "Galvanized Mild Steel Structure"],
-      repoUrl: "https://github.com/awaazgram-coep/smart-katraj-drainage",
-      finalOutcome: null
-    }
+      summary: "Smart auto-dimming LED luminaires powered by solar PV panels and LiFePO4 battery pack with LoRa fault telemetry.",
+      techStack: ["ESP32 Microcontroller", "LoRaWAN", "LiFePO4 BMS", "SolidWorks"]
+    },
+    expenses: [
+      { id: "exp-1", item: "12x High-Efficiency 60W LED Luminaires", amount: 48000, category: "Hardware & Electronics", vendor: "Havells India Industrial", url: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600", date: "2026-08-20" },
+      { id: "exp-2", item: "4x 100Ah LiFePO4 Solar Battery Packs & BMS", amount: 62000, category: "Batteries & Power", vendor: "Exide Energy Solutions", url: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600", date: "2026-08-25" },
+      { id: "exp-3", item: "LoRaWAN Gateway & Pole Sensor Nodes", amount: 24500, category: "IoT & Telemetry", vendor: "Robu.in Electronics", url: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600", date: "2026-09-02" },
+      { id: "exp-4", item: "Mounting Brackets & Weatherproof Enclosures", amount: 21400, category: "Fabrication & Mounting", vendor: "City Metal Fabricators", url: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600", date: "2026-09-10" }
+    ]
   },
   {
     id: "proj-202",
-    problemId: "prob-102",
-    title: "Solar-Hybrid Micro-Grid & Cold-Chain Stabilizer for Velhe PHC",
-    universityId: "user-uni-2",
-    universityName: "IIT Bombay - Society for Innovation & Development",
-    teamName: "Team Urja Vriksha",
-    studentLead: "Rohan Nair",
-    facultyMentor: "Dr. Meenakshi Sundaram",
-    teamMembers: ["Rohan Nair", "Kavita Rao", "Deepak Gupta", "Sanjay Menon", "Ananya Sen", "Nikhil Joshi"],
+    problemId: "ag1008",
+    title: "Clean Water ATM & Automated RO Purification Unit",
+    universityName: "BIT Mesra Innovation Cell",
+    teamName: "Team Jaltarang Hydro Lab",
+    studentLead: "Aakash Deshmukh",
+    facultyMentor: "Prof. Arvind Rao",
+    teamMembers: ["Aakash Deshmukh", "Tanvi Joshi", "Rahul Patil", "Omkar Shinde"],
     status: "solved",
     progressPercentage: 100,
-    startedAt: "2026-08-05T09:00:00Z",
-    targetCompletionDate: "2026-09-10T00:00:00Z",
-    completedAt: "2026-09-09T16:00:00Z",
-    industryPledges: [
-      {
-        id: "pledge-2",
-        industryId: "user-ind-1",
-        industryName: "Tata Sustainability & CSR Initiatives",
-        contactPerson: "Vikram Malhotra",
-        pledgeType: "Full Project Grant & Solar Panels",
-        amountPledged: 200000,
-        hardwareSupplied: "5kW Monocrystalline Solar Panels & 10kWh LiFePO4 Battery Pack",
-        pledgedAt: "2026-08-07T14:00:00Z"
-      }
-    ],
+    startedAt: "2026-07-01T10:00:00Z",
+    allocatedBudget: 190000,
+    totalExpenses: 182000,
     milestones: [
-      {
-        id: "m-201",
-        title: "PHC Load Profiling & Electrical Audit",
-        description: "Assessed 24h energy demand of vaccine fridges, delivery room lights, and baby warmers.",
-        status: "completed",
-        completedAt: "2026-08-11T12:00:00Z",
-        photoProof: "https://images.unsplash.com/photo-1509391365360-2e959784a276?w=800&auto=format&fit=crop&q=80"
-      },
-      {
-        id: "m-202",
-        title: "Rooftop 5kW Solar Array & Battery Installation",
-        description: "Mounted solar panels with cyclone-resistant aluminium brackets and wired smart surge protector.",
-        status: "completed",
-        completedAt: "2026-08-25T15:00:00Z",
-        photoProof: "https://images.unsplash.com/photo-1508873696983-2df5293cb32b?w=800&auto=format&fit=crop&q=80"
-      },
-      {
-        id: "m-203",
-        title: "Smart Grid Switcher & GSM Telemetry Alert Unit",
-        description: "Automated sub-10ms changeover switch to prevent voltage spikes; alerts Medical Officer on WhatsApp/SMS.",
-        status: "completed",
-        completedAt: "2026-09-02T16:00:00Z",
-        photoProof: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=800&auto=format&fit=crop&q=80"
-      },
-      {
-        id: "m-204",
-        title: "72-Hour Continuous Run Test & Govt Handover",
-        description: "100% uptime sustained across 4 intentional grid dropouts. PHC Officer signed project completion certificate.",
-        status: "completed",
-        completedAt: "2026-09-09T15:30:00Z",
-        photoProof: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=800&auto=format&fit=crop&q=80"
-      }
+      { id: "m-1", title: "Water Quality & TDS Testing", status: "completed", description: "Lab tested TDS levels and calibrated multi-stage filtration." },
+      { id: "m-2", title: "Automated RFID Dispenser Assembly", status: "completed", description: "Integrated smart card payment and flow rate sensor." },
+      { id: "m-3", title: "Community Center Installation & Commissioning", status: "completed", description: "Delivering 5,000L clean drinking water daily to 800+ residents." }
     ],
-    updatesTimeline: [
-      {
-        id: "up-201",
-        date: "2026-08-08T10:00:00Z",
-        author: "Vikram Malhotra",
-        role: "CSR Partner",
-        title: "Tata CSR Grant Disbursed",
-        content: "₹2,00,000 grant and solar hardware successfully dispatched to Velhe site.",
-        photos: []
-      },
-      {
-        id: "up-202",
-        date: "2026-09-09T16:00:00Z",
-        author: "Rohan Nair",
-        role: "Student Lead",
-        title: "Project Successfully Solved & Handed Over!",
-        content: "Velhe PHC is now 100% powered with zero downtime. 4,200 vaccine doses safeguarded across 8 nearby villages.",
-        photos: ["https://images.unsplash.com/photo-1508873696983-2df5293cb32b?w=800&auto=format&fit=crop&q=80"]
-      }
-    ],
-    allocatedBudget: 250000,
-    totalExpenses: 232000,
     solutionDetails: {
-      summary: "Custom 5kW Off-Grid Rooftop Solar Solution with 10kWh LiFePO4 Energy Storage and sub-10ms automatic voltage stabilizer.",
-      techStack: ["Monocrystalline Solar PV", "LiFePO4 BMS", "ESP32 GSM Telemetry", "Dual Isolated Inverters"],
-      repoUrl: "https://github.com/urja-iitb/phc-microgrid-iot",
-      finalOutcome: "Velhe PHC has achieved 100% uninterrupted electricity since commissioning. 14 critical deliveries handled seamlessly without blackouts.",
-      beforeAfterPhotos: {
-        before: "https://images.unsplash.com/photo-1509391365360-2e959784a276?w=800&auto=format&fit=crop&q=80",
-        after: "https://images.unsplash.com/photo-1508873696983-2df5293cb32b?w=800&auto=format&fit=crop&q=80"
-      }
-    }
-  }
-];
-
-export const seedExpenses = [
-  {
-    id: "exp-1",
-    projectId: "proj-201",
-    item: "High-grade SS304 Steel Sheet & Angle Beams for Debris Screen",
-    category: "Materials & Fabrication",
-    amount: 42000,
-    vendor: "Maharashtra Steel Fabricators, Pune",
-    invoiceUrl: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600&auto=format&fit=crop&q=80",
-    date: "2026-08-25",
-    loggedBy: "Aakash Deshmukh",
-    approvedByGov: true,
-    govRemarks: "Verified against civil lab estimation."
-  },
-  {
-    id: "exp-2",
-    projectId: "proj-201",
-    item: "Industrial Ultrasonic Water Depth Sensors & LoRaWAN Modems",
-    category: "IoT & Electronics",
-    amount: 28500,
-    vendor: "Robu.in Electronics Ltd.",
-    invoiceUrl: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600&auto=format&fit=crop&q=80",
-    date: "2026-08-30",
-    loggedBy: "Aakash Deshmukh",
-    approvedByGov: true,
-    govRemarks: "Essential telemetry component approved."
-  },
-  {
-    id: "exp-3",
-    projectId: "proj-201",
-    item: "Heavy Crane Rental & Drain Siphon Trenching Labour (2 Days)",
-    category: "Installation & Labor",
-    amount: 34000,
-    vendor: "PMC Authorized Earthmovers",
-    invoiceUrl: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600&auto=format&fit=crop&q=80",
-    date: "2026-09-05",
-    loggedBy: "Prof. Arvind Rao",
-    approvedByGov: true,
-    govRemarks: "On-site excavation verified by junior engineer."
-  },
-  {
-    id: "exp-201",
-    projectId: "proj-202",
-    item: "5kW Monocrystalline Half-Cut Solar Modules (10 Panels)",
-    category: "Hardware",
-    amount: 118000,
-    vendor: "Waaree Solar Technologies",
-    invoiceUrl: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600&auto=format&fit=crop&q=80",
-    date: "2026-08-18",
-    loggedBy: "Rohan Nair",
-    approvedByGov: true,
-    govRemarks: "Procured under MNRE standards."
-  },
-  {
-    id: "exp-202",
-    projectId: "proj-202",
-    item: "48V 200Ah Lithium Ferro Phosphate (LiFePO4) Battery Pack",
-    category: "Energy Storage",
-    amount: 94000,
-    vendor: "Exide Leoch Energy Pvt Ltd",
-    invoiceUrl: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600&auto=format&fit=crop&q=80",
-    date: "2026-08-22",
-    loggedBy: "Rohan Nair",
-    approvedByGov: true,
-    govRemarks: "Battery test certificate verified."
-  },
-  {
-    id: "exp-203",
-    projectId: "proj-202",
-    item: "Heavy Duty Surge Protection Device & Lightning Arrester",
-    category: "Safety Hardware",
-    amount: 20000,
-    vendor: "Schneider Electric India",
-    invoiceUrl: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600&auto=format&fit=crop&q=80",
-    date: "2026-08-29",
-    loggedBy: "Rohan Nair",
-    approvedByGov: true,
-    govRemarks: "Mandatory safety installation."
-  }
-];
-
-export const seedLeaderboard = [
-  {
-    rank: 1,
-    institution: "IIT Bombay",
-    teamName: "Team Urja Vriksha",
-    city: "Mumbai",
-    state: "Maharashtra",
-    projectsSolved: 8,
-    activeProjects: 2,
-    impactScore: 2840,
-    badges: ["Healthcare Champion", "Clean Energy Pioneer", "SIH Gold"],
-    fundsSecured: "₹ 18,50,000",
-    avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150&auto=format&fit=crop&q=80"
-  },
-  {
-    rank: 2,
-    institution: "College of Engineering Pune (COEP Tech)",
-    teamName: "Team Jaltarang Innovation Hub",
-    city: "Pune",
-    state: "Maharashtra",
-    projectsSolved: 6,
-    activeProjects: 3,
-    impactScore: 2310,
-    badges: ["Urban Resiliency", "Smart Water Award", "Tech Innovator"],
-    fundsSecured: "₹ 14,20,000",
-    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80"
-  },
-  {
-    rank: 3,
-    institution: "NIT Karnataka, Surathkal",
-    teamName: "Coastal Guardians",
-    city: "Mangalore",
-    state: "Karnataka",
-    projectsSolved: 5,
-    activeProjects: 2,
-    impactScore: 1980,
-    badges: ["Marine Ecology", "IoT Stars"],
-    fundsSecured: "₹ 11,00,000",
-    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80"
-  },
-  {
-    rank: 4,
-    institution: "VJTI Mumbai",
-    teamName: "TrafficAI Pioneers",
-    city: "Mumbai",
-    state: "Maharashtra",
-    projectsSolved: 4,
-    activeProjects: 1,
-    impactScore: 1640,
-    badges: ["Smart Mobility", "Computer Vision Star"],
-    fundsSecured: "₹ 8,90,000",
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80"
-  },
-  {
-    rank: 5,
-    institution: "RV College of Engineering",
-    teamName: "Team Swachh Bharat Tech",
-    city: "Bengaluru",
-    state: "Karnataka",
-    projectsSolved: 3,
-    activeProjects: 2,
-    impactScore: 1320,
-    badges: ["Zero Waste Champion"],
-    fundsSecured: "₹ 7,50,000",
-    avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&auto=format&fit=crop&q=80"
-  }
-];
-
-export const seedNotifications = [
-  {
-    id: "notif-1",
-    recipientRole: "all",
-    title: "Project Velhe PHC Marked SOLVED! 🎉",
-    message: "Team Urja Vriksha (IIT Bombay) successfully commissioned the 5kW Solar Micro-grid. Velhe Primary Health Center now has 100% uninterrupted electricity.",
-    timestamp: "2026-09-09T16:05:00Z",
-    read: false,
-    link: "/projects/proj-202",
-    type: "success"
-  },
-  {
-    id: "notif-2",
-    recipientRole: "university",
-    title: "Industry Sponsorship Pledged",
-    message: "Tech Mahindra Makers Lab pledged ₹75,000 & IoT Hardware for the Katraj Waterlogging project.",
-    timestamp: "2026-08-20T11:35:00Z",
-    read: true,
-    link: "/projects/proj-201",
-    type: "info"
-  },
-  {
-    id: "notif-3",
-    recipientRole: "citizen",
-    title: "Problem Verified by Smart City Dept",
-    message: "IAS Ananya Verma approved your reported issue 'Katraj Junction Waterlogging' for engineering deployment.",
-    timestamp: "2026-08-12T14:20:00Z",
-    read: true,
-    link: "/problems/prob-101",
-    type: "verification"
+      summary: "Solar-powered multi-stage RO water purification unit with RFID card dispenser and live TDS monitoring.",
+      techStack: ["Reverse Osmosis", "RFID Module", "Arduino Mega", "Solar Inverter"]
+    },
+    expenses: [
+      { id: "exp-1", item: "Commercial Multi-Stage RO Membrane System", amount: 75000, category: "Filtration Units", vendor: "AquaPure Industrial", url: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600", date: "2026-07-10" },
+      { id: "exp-2", item: "RFID Smart Card Reader & Microcontroller Kit", amount: 32000, category: "Dispenser Automation", vendor: "Robu.in Electronics", url: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600", date: "2026-07-18" },
+      { id: "exp-3", item: "3kW Solar Inverter & Heavy-duty Structure", amount: 55000, category: "Solar Power Hub", vendor: "Waaree Solar Technologies", url: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600", date: "2026-07-28" },
+      { id: "exp-4", item: "Stainless Steel Storage Tank & Plumbing", amount: 20000, category: "Plumbing & Housing", vendor: "SteelFab Corporation", url: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600", date: "2026-08-05" }
+    ]
   }
 ];

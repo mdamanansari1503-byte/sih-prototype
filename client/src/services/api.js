@@ -5,7 +5,7 @@ const API_BASE = import.meta.env.VITE_API_BASE_URL
   : '/api';
 
 // Clean seed cache version check to wipe old dummy test submissions
-const DB_VERSION = 'awaazgram_v4_clean';
+const DB_VERSION = 'awaazgram_v6_clean_presentation';
 if (typeof window !== 'undefined') {
   try {
     if (localStorage.getItem('awaazgram_db_version') !== DB_VERSION) {
@@ -17,13 +17,32 @@ if (typeof window !== 'undefined') {
   } catch (e) {}
 }
 
+export const sanitizeProblemList = (list) => {
+  if (!Array.isArray(list)) return defaultProblems;
+  const cleaned = list.filter(p => {
+    if (!p) return false;
+    const t = (p.title || '').trim().toLowerCase();
+    const id = (p.id || '').toLowerCase();
+    if (['abc', 'def', 'test', 'broken road', 'broken bridge', 'broken school', 'school broken', 'test problem'].includes(t)) {
+      return false;
+    }
+    if (id.startsWith('prob-1790') || id.startsWith('ag-1790')) return false;
+    return true;
+  });
+  return cleaned.length > 0 ? cleaned : defaultProblems;
+};
+
 // Helper for local storage persistence when backend is offline/disconnected
 const getLocalProblems = () => {
   try {
     const cached = localStorage.getItem('awaazgram_problems');
     if (cached) {
       const parsed = JSON.parse(cached);
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      const clean = sanitizeProblemList(parsed);
+      if (clean.length > 0) {
+        localStorage.setItem('awaazgram_problems', JSON.stringify(clean));
+        return clean;
+      }
     }
   } catch (e) {}
   localStorage.setItem('awaazgram_problems', JSON.stringify(defaultProblems));
@@ -196,8 +215,9 @@ export const api = {
       if (res.ok) {
         const data = await res.json();
         if (data.success && Array.isArray(data.data) && data.data.length > 0) {
-          localStorage.setItem('awaazgram_problems', JSON.stringify(data.data));
-          return data;
+          const cleanData = sanitizeProblemList(data.data);
+          localStorage.setItem('awaazgram_problems', JSON.stringify(cleanData));
+          return { ...data, data: cleanData };
         }
       }
     } catch (err) {
@@ -209,10 +229,13 @@ export const api = {
   getProblemById: async (id) => {
     try {
       const res = await fetch(`${API_BASE}/problems/${id}`);
-      if (res.ok) return await res.json();
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.data) return data;
+      }
     } catch (e) {}
     const problems = getLocalProblems();
-    const found = problems.find(p => p.id === id);
+    const found = problems.find(p => p.id === id) || defaultProblems.find(p => p.id === id);
     return found ? { success: true, data: found } : { success: false, error: 'Not found' };
   },
 
@@ -329,10 +352,13 @@ export const api = {
   getProjectById: async (id) => {
     try {
       const res = await fetch(`${API_BASE}/projects/${id}`);
-      if (res.ok) return await res.json();
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.data) return data;
+      }
     } catch (e) {}
     const projects = getLocalProjects();
-    const found = projects.find(p => p.id === id);
+    const found = projects.find(p => p.id === id || p.problemId === id) || defaultProjects.find(p => p.id === id || p.problemId === id);
     return found ? { success: true, data: found } : { success: false, error: 'Not found' };
   },
 
