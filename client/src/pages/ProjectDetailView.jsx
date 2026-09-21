@@ -125,14 +125,78 @@ export default function ProjectDetailView({
     }
   };
 
-  const timelineSteps = [
-    { title: 'Problem Submitted', date: '10 May 2025', by: 'by Citizen', status: 'completed' },
-    { title: 'AI Analysis Completed', date: '11 May 2025', by: 'Gemini Engine', status: 'completed' },
-    { title: 'Verified by Government', date: '12 May 2025', by: 'Municipal Cell', status: 'completed' },
-    { title: 'Accepted by University Team', date: '15 May 2025', by: 'MANIT Bhopal', status: 'completed' },
-    { title: 'Work in Progress', date: 'Current Phase', by: 'Field Team', status: 'current' },
-    { title: 'Expected Completion', date: '25 May 2025', by: 'Target Date', status: 'upcoming' }
-  ];
+  const getTimelineSteps = () => {
+    const status = problem?.status || (project ? project.status : 'pending_verification');
+    const isSolved = status === 'solved';
+    const isInProgress = status === 'in_progress' || status === 'testing';
+    const isVerified = status === 'verified';
+    const isPending = status === 'pending_verification' || status === 'pending';
+
+    const reportedDate = problem?.reportedAt ? new Date(problem.reportedAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '10 May 2026';
+    const reporterName = problem?.reportedByName || (typeof problem?.reportedBy === 'string' ? problem.reportedBy : problem?.reportedBy?.name) || 'Citizen';
+    const aiCategory = problem?.aiAnalysis?.category || problem?.category || 'Civic Infrastructure';
+    const verifiedOfficer = problem?.verification?.verifiedBy || 'Anita Sharma (Gov Officer)';
+    const teamName = project?.teamName || 'University Innovation Team';
+
+    return [
+      {
+        title: 'Problem Submitted by Citizen',
+        date: reportedDate,
+        by: `Reported by ${reporterName}`,
+        status: 'completed',
+        desc: 'Citizen filed grievance with verified geotagged location and image proof.'
+      },
+      {
+        title: 'Gemini AI Civic Diagnosis',
+        date: 'Instant AI Evaluation',
+        by: 'Google Gemini Engine',
+        status: 'completed',
+        desc: `AI Categorized as "${aiCategory}" • Feasibility: ${problem?.aiAnalysis?.feasibilityScore || 92}/100 • Priority: ${problem?.aiAnalysis?.urgency || 'High'}`
+      },
+      {
+        title: isPending ? 'Government Review & Verification' : 'Verified by Municipal Authority',
+        date: isPending ? 'Awaiting Municipal Officer' : (problem?.verification?.verifiedAt ? new Date(problem.verification.verifiedAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Sanctioned'),
+        by: isPending ? 'Pending Govt Approval' : verifiedOfficer,
+        status: isPending ? 'current' : 'completed',
+        desc: isPending
+          ? 'Problem is in Government queue. Municipal Officer must verify on ground and sanction grant in Government Portal.'
+          : `Municipal grant authorized. Allocated Budget: ${problem?.verification?.allocatedBudget ? `₹${problem.verification.allocatedBudget.toLocaleString('en-IN')}` : (problem?.aiAnalysis?.estimatedBudget || '₹1,20,000')}.`
+      },
+      {
+        title: (isPending || isVerified) ? 'University Project Marketplace' : 'Adopted by Student Engineering Team',
+        date: (isPending || isVerified) ? 'Open in Marketplace' : (project?.startedAt ? new Date(project.startedAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Assigned'),
+        by: (isPending || isVerified) ? 'College Innovation Cells' : teamName,
+        status: isPending ? 'upcoming' : (isVerified ? 'current' : 'completed'),
+        desc: isPending
+          ? 'Locked until Government approves this issue.'
+          : isVerified
+          ? 'Approved by Government! University engineering teams can now adopt this project in Opportunities.'
+          : `Adopted by ${teamName}. Student team building hardware prototype.`
+      },
+      {
+        title: 'Prototyping & Field Deployment',
+        date: (isPending || isVerified) ? 'Upcoming Phase' : (isSolved ? 'Completed' : 'Current Active Phase'),
+        by: (isPending || isVerified) ? 'University Students' : teamName,
+        status: (isPending || isVerified) ? 'upcoming' : (isInProgress ? 'current' : (isSolved ? 'completed' : 'upcoming')),
+        desc: isInProgress
+          ? `Students are fabricating and deploying on-site hardware solution (${project?.progressPercentage || 65}% progress).`
+          : isSolved
+          ? 'Hardware successfully deployed, tested, and validated on ground.'
+          : 'Pending team adoption and lab fabrication.'
+      },
+      {
+        title: isSolved ? 'Problem Solved & Handed Over' : 'Expected Final Handover',
+        date: isSolved ? 'Resolved on Ground' : 'Target Milestone',
+        by: 'Citizen & Govt Validation',
+        status: isSolved ? 'completed' : 'upcoming',
+        desc: isSolved
+          ? '100% verified solution active. Citizen feedback verified.'
+          : 'Community feedback, inspection, and public sign-off.'
+      }
+    ];
+  };
+
+  const timelineSteps = getTimelineSteps();
 
   if (loading) {
     return (
@@ -146,6 +210,15 @@ export default function ProjectDetailView({
   const title = problem?.title || project?.title || 'Broken Street Light';
   const idCode = problem?.id?.toUpperCase() || 'AG1001';
   const locationText = problem?.location?.address || 'Ward 12, Bhopal';
+
+  const isSolved = problem?.status === 'solved' || project?.status === 'solved';
+  const isInProgress = problem?.status === 'in_progress' || project?.status === 'in_progress';
+  const isVerified = problem?.status === 'verified';
+  const isPending = problem?.status === 'pending_verification' || problem?.status === 'pending';
+
+  const completedStepsCount = timelineSteps.filter(s => s.status === 'completed').length;
+  const activeStepIdx = timelineSteps.findIndex(s => s.status === 'current');
+  const activeStepNum = activeStepIdx !== -1 ? activeStepIdx + 1 : (isSolved ? 6 : completedStepsCount + 1);
 
   return (
     <div className="max-w-5xl mx-auto space-y-6 pb-16 text-slate-800 animate-fadeIn">
@@ -176,12 +249,16 @@ export default function ProjectDetailView({
                 {title}
               </h1>
               <span className={`px-3 py-1 rounded-full border text-xs font-bold flex items-center gap-1.5 ${
-                problem?.status === 'solved'
+                isSolved
                   ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
-                  : 'bg-blue-50 text-blue-800 border-blue-200'
+                  : isInProgress
+                  ? 'bg-blue-50 text-blue-800 border-blue-200'
+                  : isVerified
+                  ? 'bg-purple-50 text-purple-800 border-purple-200'
+                  : 'bg-amber-50 text-amber-800 border-amber-200'
               }`}>
-                <span className={`w-2 h-2 rounded-full ${problem?.status === 'solved' ? 'bg-emerald-500' : 'bg-blue-500 animate-pulse'}`} />
-                <span>{problem?.status === 'solved' ? 'Solved' : 'In Progress'}</span>
+                <span className={`w-2 h-2 rounded-full ${isSolved ? 'bg-emerald-500' : isInProgress ? 'bg-blue-500 animate-pulse' : isVerified ? 'bg-purple-500' : 'bg-amber-500'}`} />
+                <span>{isSolved ? 'Solved' : isInProgress ? 'In Progress' : isVerified ? 'Verified (Open for Adoption)' : 'Under Review'}</span>
               </span>
             </div>
             <p className="text-xs text-slate-500">
@@ -200,7 +277,7 @@ export default function ProjectDetailView({
               <button
                 key={tab.id}
                 onClick={() => setActiveSubTab(tab.id)}
-                className={`px-3.5 py-1.5 rounded-xl capitalize transition ${
+                className={`px-3.5 py-1.5 rounded-xl capitalize transition cursor-pointer ${
                   activeTab === tab.id
                     ? 'bg-white text-emerald-800 shadow-xs font-extrabold'
                     : 'text-slate-600 hover:text-slate-900'
@@ -223,7 +300,7 @@ export default function ProjectDetailView({
                   Lifecycle Progress Timeline
                 </h3>
                 <span className="text-[11px] text-emerald-700 font-bold bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
-                  Step 5 of 6 Active
+                  Step {activeStepNum} of 6 Active
                 </span>
               </div>
 
@@ -248,23 +325,26 @@ export default function ProjectDetailView({
                         {isCompleted ? <Check className="w-3.5 h-3.5 stroke-[3]" /> : idx + 1}
                       </div>
 
-                      <div className="bg-slate-50/70 border border-slate-200/80 p-3 rounded-2xl flex items-center justify-between gap-2 hover:bg-slate-50 transition">
-                        <div>
+                      <div className="bg-slate-50/70 border border-slate-200/80 p-3.5 rounded-2xl space-y-1 hover:bg-slate-50 transition">
+                        <div className="flex items-center justify-between gap-2">
                           <div className="text-xs font-bold text-slate-900">{step.title}</div>
-                          <div className="text-[11px] text-slate-500">{step.by} • {step.date}</div>
+                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase ${
+                            isCompleted
+                              ? 'bg-emerald-100 text-emerald-800'
+                              : isCurrent
+                              ? 'bg-blue-100 text-blue-800 animate-pulse'
+                              : 'bg-slate-100 text-slate-500'
+                          }`}>
+                            {isCompleted ? 'Done' : isCurrent ? 'Active' : 'Pending'}
+                          </span>
                         </div>
-
-                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase ${
-                          isCompleted
-                            ? 'bg-emerald-100 text-emerald-800'
-                            : isCurrent
-                            ? 'bg-blue-100 text-blue-800'
-                            : 'bg-slate-200 text-slate-600'
-                        }`}>
-                          {step.status}
-                        </span>
+                        <div className="text-[11px] text-slate-500">{step.by} • {step.date}</div>
+                        {step.desc && (
+                          <div className="text-[11px] text-slate-600 pt-0.5 leading-relaxed font-normal">
+                            {step.desc}
+                          </div>
+                        )}
                       </div>
-
                     </div>
                   );
                 })}

@@ -95,6 +95,9 @@ export default function CitizenPortal({ problems = [], onProblemCreated, onSelec
       formData.append('state', 'Jharkhand');
       formData.append('reportedById', currentUser?.id || 'user-cit-1');
       formData.append('reportedByName', currentUser?.name || 'Rahul Mishra');
+      if (imagePreview) {
+        formData.append('imagePreview', imagePreview);
+      }
 
       const res = await api.createProblem(formData);
       if (res.success) {
