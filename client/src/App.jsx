@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { LanguageProvider, useLanguage } from './context/LanguageContext';
 import { api } from './services/api';
+import { defaultProblems, defaultProjects } from './services/defaultData';
 
 import Navbar from './components/Navbar';
 
@@ -55,16 +56,25 @@ function AppContent() {
   };
 
   const handleResetDb = async () => {
-    if (window.confirm('Reset database to default seed state? This will refresh all demo issues and projects.')) {
+    if (window.confirm('Reset database to pristine default demo state? All newly submitted test problems and requests will be wiped.')) {
       try {
+        setLoading(true);
         await api.resetSystem();
-        await loadAllData();
+        localStorage.removeItem('awaazgram_problems');
+        localStorage.removeItem('awaazgram_projects');
+        localStorage.removeItem('awaazgram_requests');
+        localStorage.setItem('awaazgram_problems', JSON.stringify(defaultProblems));
+        localStorage.setItem('awaazgram_projects', JSON.stringify(defaultProjects));
+        setProblems(defaultProblems);
+        setProjects(defaultProjects);
         setSelectedProblemId(null);
         setSelectedProjectId(null);
-        setActiveTab('landing');
-        alert('Database has been reset to default state.');
+        setActiveTab('explorer');
+        alert('Database has been reset to default clean state!');
       } catch (err) {
         console.error(err);
+      } finally {
+        setLoading(false);
       }
     }
   };

@@ -10,7 +10,8 @@ import {
   LogOut,
   Globe,
   Check,
-  LogIn
+  LogIn,
+  RotateCcw
 } from 'lucide-react';
 import NotificationsModal from './NotificationsModal';
 
@@ -331,6 +332,16 @@ export default function Navbar({ activeTab, setActiveTab, onOpenLogin, onResetDb
               {unreadCount > 0 && (
                 <span className="absolute top-1 right-1 w-2.5 h-2.5 rounded-full bg-rose-500 ring-2 ring-white animate-pulse" />
               )}
+            </button>
+
+            {/* Quick Reset Demo Data Button */}
+            <button
+              onClick={onResetDb}
+              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-rose-50 text-slate-700 hover:text-rose-700 border border-slate-200 hover:border-rose-200 font-bold text-xs transition cursor-pointer"
+              title="Reset Demo Data (Purge newly added problems & restore default dataset)"
+            >
+              <RotateCcw className="w-3.5 h-3.5 text-slate-500 hover:text-rose-600" />
+              <span className="hidden sm:inline">Reset Demo</span>
             </button>
 
             {/* Direct Login Button (Opens Login / Join Role Section) */}

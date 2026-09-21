@@ -398,3 +398,128 @@ export const seedProjects = [
     ]
   }
 ];
+
+export const seedExpenses = [
+  {
+    id: "exp-1",
+    projectId: "proj-201",
+    item: "12x High-Efficiency 60W LED Luminaires",
+    category: "Hardware & Electronics",
+    amount: 48000,
+    vendor: "Havells India Industrial",
+    invoiceUrl: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600",
+    date: "2026-08-20"
+  },
+  {
+    id: "exp-2",
+    projectId: "proj-201",
+    item: "4x 100Ah LiFePO4 Solar Battery Packs & BMS",
+    category: "Batteries & Power",
+    amount: 62000,
+    vendor: "Exide Energy Solutions",
+    invoiceUrl: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600",
+    date: "2026-08-25"
+  },
+  {
+    id: "exp-3",
+    projectId: "proj-201",
+    item: "LoRaWAN Gateway & Pole Sensor Nodes",
+    category: "IoT & Telemetry",
+    amount: 24500,
+    vendor: "Robu.in Electronics",
+    invoiceUrl: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600",
+    date: "2026-09-02"
+  },
+  {
+    id: "exp-4",
+    projectId: "proj-201",
+    item: "Mounting Brackets & Weatherproof Enclosures",
+    category: "Fabrication & Mounting",
+    amount: 21400,
+    vendor: "City Metal Fabricators",
+    invoiceUrl: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600",
+    date: "2026-09-10"
+  },
+  {
+    id: "exp-201",
+    projectId: "proj-202",
+    item: "Commercial Multi-Stage RO Membrane System",
+    category: "Filtration Units",
+    amount: 75000,
+    vendor: "AquaPure Industrial",
+    invoiceUrl: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600",
+    date: "2026-07-10"
+  },
+  {
+    id: "exp-202",
+    projectId: "proj-202",
+    item: "RFID Smart Card Reader & Microcontroller Kit",
+    category: "Dispenser Automation",
+    amount: 32000,
+    vendor: "Robu.in Electronics",
+    invoiceUrl: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600",
+    date: "2026-07-18"
+  },
+  {
+    id: "exp-203",
+    projectId: "proj-202",
+    item: "3kW Solar Inverter & Heavy-duty Structure",
+    category: "Solar Power Hub",
+    amount: 55000,
+    vendor: "Waaree Solar Technologies",
+    invoiceUrl: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600",
+    date: "2026-07-28"
+  },
+  {
+    id: "exp-204",
+    projectId: "proj-202",
+    item: "Stainless Steel Storage Tank & Plumbing",
+    category: "Plumbing & Housing",
+    amount: 20000,
+    vendor: "SteelFab Corporation",
+    invoiceUrl: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600",
+    date: "2026-08-05"
+  }
+];
+
+export const seedLeaderboard = [
+  {
+    rank: 1,
+    institution: "MANIT Bhopal Innovation Hub",
+    teamName: "MANIT IoT & Energy Innovation Team",
+    city: "Bhopal",
+    state: "Madhya Pradesh",
+    projectsSolved: 8,
+    activeProjects: 2,
+    impactScore: 2840,
+    badges: ["Clean Energy Pioneer", "SIH Top Contributor"],
+    fundsSecured: "₹ 18,50,000",
+    avatar: "https://images.unsplash.com/photo-1562774053-701939374585?w=150"
+  },
+  {
+    rank: 2,
+    institution: "BIT Mesra Innovation Cell",
+    teamName: "Team Jaltarang Hydro Lab",
+    city: "Ranchi",
+    state: "Jharkhand",
+    projectsSolved: 6,
+    activeProjects: 3,
+    impactScore: 2310,
+    badges: ["Smart Water Award", "Tech Innovator"],
+    fundsSecured: "₹ 14,20,000",
+    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150"
+  }
+];
+
+export const seedNotifications = [
+  {
+    id: "notif-1",
+    recipientRole: "all",
+    title: "Project Clean Water ATM Marked SOLVED! 🎉",
+    message: "BIT Mesra Innovation Cell successfully commissioned the Clean Water ATM in Bokaro. 5000L daily pure drinking water active.",
+    timestamp: "2026-08-05T16:05:00Z",
+    read: false,
+    link: "/projects/proj-202",
+    type: "success"
+  }
+];
