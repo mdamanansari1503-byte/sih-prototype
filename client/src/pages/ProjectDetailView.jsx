@@ -15,7 +15,9 @@ import {
   Layers,
   Receipt,
   Check,
-  CircleDot
+  CircleDot,
+  CameraOff,
+  Image as ImageIcon
 } from 'lucide-react';
 
 export default function ProjectDetailView({
@@ -381,17 +383,25 @@ export default function ProjectDetailView({
             {/* Right Column: Location Photo & Map (Panel 10) */}
             <div className="md:col-span-5 space-y-4">
               
-              {/* Site Photo */}
-              <div className="rounded-2xl overflow-hidden border border-slate-200 shadow-sm relative group">
-                <img
-                  src={problem?.images?.[0] || "https://images.unsplash.com/photo-1547683905-f686c993aae5?w=600"}
-                  alt="Site"
-                  className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-                <div className="absolute bottom-2 left-2 bg-slate-900/80 backdrop-blur-xs text-white text-[10px] font-bold px-2 py-1 rounded-lg">
-                  📍 Verified Ground Photo
+              {/* Site Photo or No Photo Placeholder */}
+              {problem?.images && problem.images.length > 0 && problem.images[0] ? (
+                <div className="rounded-2xl overflow-hidden border border-slate-200 shadow-sm relative group">
+                  <img
+                    src={problem.images[0]}
+                    alt="Site"
+                    className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                  <div className="absolute bottom-2 left-2 bg-slate-900/80 backdrop-blur-xs text-white text-[10px] font-bold px-2 py-1 rounded-lg">
+                    📍 Verified Ground Photo Evidence
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <div className="rounded-2xl overflow-hidden border border-slate-200 shadow-sm bg-slate-100 h-44 flex flex-col items-center justify-center text-slate-400 gap-1.5 p-4 text-center">
+                  <CameraOff className="w-7 h-7 text-slate-400 stroke-[1.5]" />
+                  <div className="text-xs font-bold text-slate-600">No Photo Uploaded</div>
+                  <div className="text-[10px] text-slate-400">Grievance verified through GPS coordinates & ground description</div>
+                </div>
+              )}
 
               {/* Map Card */}
               <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200 text-center space-y-2 shadow-xs">

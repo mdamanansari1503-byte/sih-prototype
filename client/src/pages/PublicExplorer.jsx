@@ -11,7 +11,9 @@ import {
   Building,
   CheckCircle2,
   Clock,
-  Sparkles
+  Sparkles,
+  CameraOff,
+  Image as ImageIcon
 } from 'lucide-react';
 
 export default function PublicExplorer({ problems = [], projects = [], onSelectProblem, onSelectProject, onProblemUpdated, onOpenProfile, initialSearch = '' }) {
@@ -173,13 +175,22 @@ export default function PublicExplorer({ problems = [], projects = [], onSelectP
               className="bg-white rounded-3xl border border-slate-200/90 overflow-hidden shadow-xs hover:shadow-md hover:border-emerald-300 transition-all cursor-pointer flex flex-col justify-between group"
             >
               <div>
-                {/* Image */}
-                <div className="h-40 relative bg-slate-100 overflow-hidden">
-                  <img
-                    src={prob.images?.[0] || 'https://images.unsplash.com/photo-1547683905-f686c993aae5?w=600'}
-                    alt={prob.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
-                  />
+                {/* Image or No Photo Placeholder */}
+                <div className="h-40 relative bg-slate-100 overflow-hidden flex items-center justify-center">
+                  {prob.images && prob.images.length > 0 && prob.images[0] ? (
+                    <img
+                      src={prob.images[0]}
+                      alt={prob.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-slate-100 flex flex-col items-center justify-center text-slate-400 gap-1.5 p-4 text-center">
+                      <CameraOff className="w-6 h-6 text-slate-400 stroke-[1.5]" />
+                      <span className="text-[11px] font-bold text-slate-500">No Photo Uploaded</span>
+                      <span className="text-[9px] text-slate-400">GPS verified grievance</span>
+                    </div>
+                  )}
+
                   <div className="absolute top-3 left-3">
                     <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase shadow-xs ${
                       isSolved

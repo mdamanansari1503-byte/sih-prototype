@@ -13,7 +13,7 @@ export const defaultProblems = [
       pincode: "462003",
       coordinates: { lat: 23.2599, lng: 77.4126 }
     },
-    images: ["https://images.unsplash.com/photo-1547683905-f686c993aae5?w=600"],
+    images: ["https://images.unsplash.com/photo-1509228468518-180dd4864904?w=600"],
     reportedBy: "Rahul Mishra",
     reportedByName: "Rahul Mishra",
     reportedAt: "2026-05-10T09:15:00Z",
@@ -68,7 +68,7 @@ export const defaultProblems = [
       pincode: "834003",
       coordinates: { lat: 23.2847, lng: 85.3131 }
     },
-    images: ["https://images.unsplash.com/photo-1509391365360-2e959784a276?w=600"],
+    images: ["https://images.unsplash.com/photo-1584467735815-f778f274e296?w=600"],
     reportedBy: "Amit Patel",
     reportedByName: "Amit Patel",
     reportedAt: "2026-05-08T11:00:00Z",
@@ -95,7 +95,7 @@ export const defaultProblems = [
       pincode: "835103",
       coordinates: { lat: 23.4147, lng: 85.5298 }
     },
-    images: ["https://images.unsplash.com/photo-1509391365360-2e959784a276?w=600"],
+    images: ["https://images.unsplash.com/photo-1508873696983-2df5293cb32f?w=600"],
     reportedBy: "Birsa Munda Ward",
     reportedByName: "Birsa Munda Ward",
     reportedAt: "2026-05-05T08:30:00Z",
@@ -122,7 +122,7 @@ export const defaultProblems = [
       pincode: "835103",
       coordinates: { lat: 23.4475, lng: 85.6543 }
     },
-    images: ["https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=600"],
+    images: ["https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?w=600"],
     reportedBy: "Priya Sharma",
     reportedByName: "Priya Sharma",
     reportedAt: "2026-05-01T16:45:00Z",
@@ -135,6 +135,33 @@ export const defaultProblems = [
       estimatedBudget: "₹2,10,000",
       recommendedDepartment: "Civil & Geo-technical Engineering Lab",
       summary: "Gabion wall reinforcement and reinforced concrete culvert apron with drainage weep holes."
+    }
+  },
+  {
+    id: "ag1006",
+    title: "Unregulated Solid Waste Overflow near Community Market",
+    description: "Bio-hazard and open waste dumping overflowing into drainage channels near daily market.",
+    category: "Waste Management & Sanitation",
+    location: {
+      address: "Daily Vegetable Market Chowk, Sector 2",
+      city: "Ranchi",
+      state: "Jharkhand",
+      pincode: "834002",
+      coordinates: { lat: 23.3601, lng: 85.3250 }
+    },
+    images: ["https://images.unsplash.com/photo-1605600659908-0ef719419d41?w=600"],
+    reportedBy: "Vikas Sinha",
+    reportedByName: "Vikas Sinha",
+    reportedAt: "2026-05-03T12:00:00Z",
+    status: "verified",
+    upvotes: 35,
+    aiAnalysis: {
+      urgency: "High",
+      category: "Waste Management & Sanitation",
+      feasibilityScore: 93,
+      estimatedBudget: "₹75,000",
+      recommendedDepartment: "Urban Sanitation & Smart Waste Hub",
+      summary: "Automated ultrasonic fill-level telemetry bins and community organic bio-composting unit."
     }
   },
   {

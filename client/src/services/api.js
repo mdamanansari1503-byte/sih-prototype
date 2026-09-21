@@ -4,6 +4,19 @@ const API_BASE = import.meta.env.VITE_API_BASE_URL
   ? `${import.meta.env.VITE_API_BASE_URL.replace(/\/$/, '')}/api`
   : '/api';
 
+// Clean seed cache version check to wipe old dummy test submissions
+const DB_VERSION = 'awaazgram_v4_clean';
+if (typeof window !== 'undefined') {
+  try {
+    if (localStorage.getItem('awaazgram_db_version') !== DB_VERSION) {
+      localStorage.removeItem('awaazgram_problems');
+      localStorage.removeItem('awaazgram_projects');
+      localStorage.removeItem('awaazgram_requests');
+      localStorage.setItem('awaazgram_db_version', DB_VERSION);
+    }
+  } catch (e) {}
+}
+
 // Helper for local storage persistence when backend is offline/disconnected
 const getLocalProblems = () => {
   try {
@@ -222,19 +235,6 @@ export const api = {
     const reportedByName = formData.get('reportedByName') || 'Rahul Mishra';
     const imagePreview = formData.get('imagePreview') || null;
 
-    // Pick contextual default image if none provided
-    let fallbackImage = "https://images.unsplash.com/photo-1547683905-f686c993aae5?w=600";
-    const lower = `${title} ${description}`.toLowerCase();
-    if (lower.includes('bridge') || lower.includes('pul')) {
-      fallbackImage = "https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?w=600";
-    } else if (lower.includes('water') || lower.includes('drain') || lower.includes('pipe')) {
-      fallbackImage = "https://images.unsplash.com/photo-1584467735815-f778f274e296?w=600";
-    } else if (lower.includes('light') || lower.includes('solar') || lower.includes('dark')) {
-      fallbackImage = "https://images.unsplash.com/photo-1509228468518-180dd4864904?w=600";
-    } else if (lower.includes('waste') || lower.includes('garbage')) {
-      fallbackImage = "https://images.unsplash.com/photo-1605600659908-0ef719419d41?w=600";
-    }
-
     const aiAnalysis = generateCivicAIAnalysis(title, description, category, address, city);
 
     const newProblem = {
@@ -243,7 +243,7 @@ export const api = {
       description,
       category: aiAnalysis.category || category,
       location: { address, city, state },
-      images: [imagePreview || fallbackImage],
+      images: imagePreview ? [imagePreview] : [],
       reportedBy: reportedByName,
       reportedByName: reportedByName,
       reportedAt: new Date().toISOString(),

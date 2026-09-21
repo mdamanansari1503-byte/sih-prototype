@@ -23,6 +23,7 @@ import {
   Wallet,
   PieChart,
   Image as ImageIcon,
+  CameraOff,
   AlertCircle
 } from 'lucide-react';
 
@@ -474,19 +475,27 @@ export default function GovernmentDashboard({
 
                   {/* Middle Row: Photo + Description */}
                   <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-start">
-                    {/* Photo */}
+                    {/* Photo or No Photo Placeholder */}
                     <div className="md:col-span-3">
-                      <div className="relative h-32 w-full rounded-2xl overflow-hidden border border-slate-200 bg-slate-900 group">
-                        <img
-                          src={photoUrl}
-                          alt={prob.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                        />
-                        <div className="absolute bottom-1.5 left-1.5 right-1.5 px-2 py-0.5 bg-black/60 backdrop-blur-xs rounded-lg text-[10px] text-white font-medium flex items-center gap-1">
-                          <ImageIcon className="w-3 h-3 text-emerald-400" />
-                          <span>On-Site Photo Evidence</span>
+                      {prob.images && prob.images.length > 0 && prob.images[0] ? (
+                        <div className="relative h-32 w-full rounded-2xl overflow-hidden border border-slate-200 bg-slate-900 group">
+                          <img
+                            src={prob.images[0]}
+                            alt={prob.title}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                          />
+                          <div className="absolute bottom-1.5 left-1.5 right-1.5 px-2 py-0.5 bg-black/60 backdrop-blur-xs rounded-lg text-[10px] text-white font-medium flex items-center gap-1">
+                            <ImageIcon className="w-3 h-3 text-emerald-400" />
+                            <span>On-Site Photo Evidence</span>
+                          </div>
                         </div>
-                      </div>
+                      ) : (
+                        <div className="h-32 w-full rounded-2xl overflow-hidden border border-slate-200 bg-slate-100 flex flex-col items-center justify-center text-slate-400 gap-1 p-2 text-center">
+                          <CameraOff className="w-5 h-5 text-slate-400 stroke-[1.5]" />
+                          <span className="text-[10px] font-bold text-slate-500">No Photo Uploaded</span>
+                          <span className="text-[9px] text-slate-400">GPS verified</span>
+                        </div>
+                      )}
                     </div>
 
                     {/* Citizen Description */}
