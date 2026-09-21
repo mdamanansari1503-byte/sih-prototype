@@ -163,14 +163,22 @@ export default function ProjectDetailView({
           : `Municipal grant authorized. Allocated Budget: ${problem?.verification?.allocatedBudget ? `₹${problem.verification.allocatedBudget.toLocaleString('en-IN')}` : (problem?.aiAnalysis?.estimatedBudget || '₹1,20,000')}.`
       },
       {
-        title: (isPending || isVerified) ? 'University Project Marketplace' : 'Adopted by Student Engineering Team',
-        date: (isPending || isVerified) ? 'Open in Marketplace' : (project?.startedAt ? new Date(project.startedAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Assigned'),
-        by: (isPending || isVerified) ? 'College Innovation Cells' : teamName,
-        status: isPending ? 'upcoming' : (isVerified ? 'current' : 'completed'),
+        title: (isPending || isVerified)
+          ? (problem?.adoptionRequest?.status === 'pending_approval' ? `Adoption Proposal Submitted by ${problem.adoptionRequest.teamName}` : 'University Project Marketplace')
+          : 'Adopted by Student Engineering Team',
+        date: (isPending || isVerified)
+          ? (problem?.adoptionRequest?.status === 'pending_approval' ? 'Awaiting Govt Sanction' : 'Open in Marketplace')
+          : (project?.startedAt ? new Date(project.startedAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Assigned'),
+        by: (isPending || isVerified)
+          ? (problem?.adoptionRequest?.status === 'pending_approval' ? `${problem.adoptionRequest.universityName || 'University Team'}` : 'College Innovation Cells')
+          : teamName,
+        status: isPending ? 'upcoming' : (isVerified ? (problem?.adoptionRequest?.status === 'pending_approval' ? 'current' : 'current') : 'completed'),
         desc: isPending
           ? 'Locked until Government approves this issue.'
+          : (problem?.adoptionRequest?.status === 'pending_approval')
+          ? `Team ${problem.adoptionRequest.teamName} submitted an adoption proposal. Awaiting Municipal Officer grant approval in Government Portal.`
           : isVerified
-          ? 'Approved by Government! University engineering teams can now adopt this project in Opportunities.'
+          ? 'Approved by Government! University engineering teams can now submit an adoption proposal in Opportunities.'
           : `Adopted by ${teamName}. Student team building hardware prototype.`
       },
       {

@@ -127,51 +127,21 @@ export default function GovernmentDashboard({
     }
   ];
 
-  // Sample College Requests (clean, concise data)
-  const [requestsList, setRequestsList] = useState([
-    {
-      id: 'REQ-JH-2026-01',
-      problemId: problems[0]?.id || 'p1',
-      problemTitle: problems[0]?.title || 'Drinking Water Fluoride Contamination in Tupudana Village',
-      location: 'Tupudana, Ranchi (18 km)',
-      university: 'BIT Mesra, Ranchi',
-      teamName: 'Jal-Shakti Innovation Cell',
-      teamLead: 'Prof. S. K. Roy (4 Students)',
-      requestedBudget: 145000,
-      aiRecommendedBudget: 120000,
-      aiMatchScore: 96,
-      aiShortReason: '18km distance • Nano-Filtration lab equipment ready • Prior water pilot experience.',
-      status: 'pending_approval'
-    },
-    {
-      id: 'REQ-JH-2026-02',
-      problemId: problems[1]?.id || 'p2',
-      problemTitle: problems[1]?.title || 'Solar Microgrid Failure in Angara Tribal Community Center',
-      location: 'Angara Block, Ranchi (42 km)',
-      university: 'IIT ISM Dhanbad',
-      teamName: 'Urja Vikas Taskforce',
-      teamLead: 'Dr. Neha Verma (3 M.Tech)',
-      requestedBudget: 95000,
-      aiRecommendedBudget: 85000,
-      aiMatchScore: 92,
-      aiShortReason: '42km distance • IoT battery testing rig available • Need-based hardware audit.',
-      status: 'pending_approval'
-    },
-    {
-      id: 'REQ-JH-2026-03',
-      problemId: problems[2]?.id || 'p3',
-      problemTitle: problems[2]?.title || 'Culvert Foundation Erosion on Bundu Rural Link Road',
-      location: 'Bundu Sub-Division, Ranchi (65 km)',
-      university: 'NIT Jamshedpur',
-      teamName: 'Setu Nirman Squad',
-      teamLead: 'Er. A. Soren (Civil Batch)',
-      requestedBudget: 210000,
-      aiRecommendedBudget: 180000,
-      aiMatchScore: 89,
-      aiShortReason: 'Geo-technical testing lab • Structural simulation ready.',
-      status: 'approved'
-    }
-  ]);
+  // College Requests / Adoption Proposals
+  const [requestsList, setRequestsList] = useState([]);
+
+  React.useEffect(() => {
+    loadRequests();
+  }, [problems, projects]);
+
+  const loadRequests = async () => {
+    try {
+      const res = await api.getAdoptionRequests();
+      if (res.success && Array.isArray(res.data)) {
+        setRequestsList(res.data);
+      }
+    } catch (e) {}
+  };
 
   // CSR Funding Ledger
   const fundingLedger = [
@@ -328,16 +298,40 @@ export default function GovernmentDashboard({
     }
   };
 
-  const handleApprove = (req) => {
-    alert(`Request ${req.id} Approved! Need-based grant of ₹${req.aiRecommendedBudget.toLocaleString('en-IN')} allocated to ${req.university}.`);
-    setRequestsList(prev => prev.map(r => r.id === req.id ? { ...r, status: 'approved' } : r));
-    if (selectedRequest?.id === req.id) setSelectedRequest(null);
+  const handleApprove = async (req) => {
+    setIsProcessing(true);
+    try {
+      const res = await api.approveAdoptionRequest(req.id);
+      if (res.success) {
+        if (onProjectCreated && res.data?.project) {
+          onProjectCreated(res.data.project);
+        }
+        if (onProblemUpdated && res.data?.problem) {
+          onProblemUpdated(res.data.problem);
+        }
+        setRequestsList(prev => prev.map(r => r.id === req.id ? { ...r, status: 'approved' } : r));
+        alert(`🎉 Request Approved! Sanctioned grant of ₹${(req.aiRecommendedBudget || 150000).toLocaleString('en-IN')} to ${req.university} (${req.teamName}). Project is now officially IN PROGRESS!`);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsProcessing(false);
+      if (selectedRequest?.id === req.id) setSelectedRequest(null);
+    }
   };
 
-  const handleReject = (req) => {
-    alert(`Request ${req.id} Rejected.`);
-    setRequestsList(prev => prev.map(r => r.id === req.id ? { ...r, status: 'rejected' } : r));
-    if (selectedRequest?.id === req.id) setSelectedRequest(null);
+  const handleReject = async (req) => {
+    setIsProcessing(true);
+    try {
+      await api.rejectAdoptionRequest(req.id);
+      setRequestsList(prev => prev.map(r => r.id === req.id ? { ...r, status: 'rejected' } : r));
+      alert(`Request ${req.id} Rejected.`);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsProcessing(false);
+      if (selectedRequest?.id === req.id) setSelectedRequest(null);
+    }
   };
 
   return (

@@ -144,6 +144,8 @@ export default function UniversityDashboard({
   const completedCount = uniProjects.filter(p => p.status === 'solved').length;
   const totalTeamMembers = uniProjects.reduce((acc, p) => acc + (p.teamMembers?.length || 4), 0);
 
+  const [proposalSuccess, setProposalSuccess] = useState(null);
+
   const handleOpenAdopt = (prob) => {
     setAdoptingProblem(prob);
     setSolutionSummary(prob.aiAnalysis?.summary || `Engineering deployment addressing: ${prob.title}`);
@@ -158,35 +160,31 @@ export default function UniversityDashboard({
       const membersArray = teamMembersInput.split(',').map(m => m.trim()).filter(Boolean);
       const techArray = techStackInput.split(',').map(t => t.trim()).filter(Boolean);
 
-      const res = await api.createProject({
+      const res = await api.createAdoptionRequest({
         problemId: adoptingProblem.id,
-        title: adoptingProblem.title,
-        universityId: currentUser.id || 'user-uni-1',
-        universityName: currentUser.institution || 'MANIT Bhopal',
+        problemTitle: adoptingProblem.title,
+        location: `${adoptingProblem.location?.address || ''}, ${adoptingProblem.location?.city || 'Ranchi'}`,
+        university: currentUser.institution || 'MANIT Bhopal',
         teamName,
-        studentLead,
+        teamLead: studentLead,
         facultyMentor,
         teamMembers: membersArray,
         solutionDetails: {
           summary: solutionSummary,
           techStack: techArray
         },
-        allocatedBudget: adoptingProblem.verification?.allocatedBudget || 180000,
-        milestones: [
-          { id: 'm-1', title: 'Problem Site Survey & Technical Architecture Design', status: 'completed', description: 'Conducted field baseline inspection and designed modular schematic.' },
-          { id: 'm-2', title: 'Hardware Fabrication & Lab Flume / Bench Testing', status: 'in_progress', description: 'Fabricating core sensors and circuitry in university laboratory.' },
-          { id: 'm-3', title: 'On-Site Deployment & Telemetry Integration', status: 'pending', description: 'Deploying prototype to community location with real-time tracking.' },
-          { id: 'm-4', title: 'Community Handover & Municipal Sign-off', status: 'pending', description: 'Validation under operational conditions and final handover.' }
-        ]
+        requestedBudget: adoptingProblem.verification?.allocatedBudget || 150000,
+        aiRecommendedBudget: adoptingProblem.verification?.allocatedBudget || 150000
       });
 
       if (res.success) {
-        if (onProjectCreated) onProjectCreated(res.data);
+        setProposalSuccess({
+          reqId: res.data.id,
+          title: adoptingProblem.title,
+          teamName: teamName,
+          budget: res.data.aiRecommendedBudget
+        });
         setAdoptingProblem(null);
-        setViewMode('projects');
-        try {
-          confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
-        } catch (e) {}
       }
     } catch (err) {
       console.error(err);
@@ -406,22 +404,33 @@ export default function UniversityDashboard({
 
                     </div>
 
-                    {/* Footer Actions: View & Take Project (Green) */}
+                    {/* Footer Actions: View & Submit Adoption Proposal */}
                     <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-3">
                       <button
                         onClick={() => onSelectProblem ? onSelectProblem(prob.id) : (setActiveTab && setActiveTab('explorer'))}
                         className="px-4 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold text-xs transition cursor-pointer"
                       >
-                        View Full Details
+                        View Public Tracking
                       </button>
 
-                      <button
-                        onClick={() => handleOpenAdopt(prob)}
-                        className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs transition shadow-md shadow-emerald-600/20 flex items-center gap-1.5 cursor-pointer"
-                      >
-                        <Rocket className="w-3.5 h-3.5" />
-                        <span>Take Project →</span>
-                      </button>
+                      {prob.status === 'in_progress' || prob.projectId ? (
+                        <span className="px-3.5 py-1.5 rounded-xl bg-blue-50 text-blue-700 font-bold text-xs border border-blue-200">
+                          ● Assigned to Team
+                        </span>
+                      ) : prob.adoptionRequest?.status === 'pending_approval' ? (
+                        <div className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-amber-50 text-amber-800 font-bold text-xs border border-amber-200">
+                          <Clock className="w-3.5 h-3.5 text-amber-600 animate-spin" />
+                          <span>Proposal Under Govt Review</span>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => handleOpenAdopt(prob)}
+                          className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs transition shadow-md shadow-emerald-600/20 flex items-center gap-1.5 cursor-pointer"
+                        >
+                          <FileText className="w-3.5 h-3.5" />
+                          <span>Submit Adoption Proposal →</span>
+                        </button>
+                      )}
                     </div>
 
                   </div>
@@ -664,7 +673,7 @@ export default function UniversityDashboard({
         </div>
       )}
 
-      {/* 4. MODAL: TAKE PROJECT / ADOPT PROBLEM */}
+      {/* 4. MODAL: SUBMIT ADOPTION PROPOSAL */}
       {adoptingProblem && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm animate-fadeIn">
           <div className="bg-white rounded-3xl border border-slate-200 max-w-xl w-full p-6 sm:p-8 shadow-2xl space-y-5 text-xs max-h-[90vh] overflow-y-auto">
@@ -672,11 +681,11 @@ export default function UniversityDashboard({
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <div>
                 <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 font-bold text-[10px] mb-1">
-                  <Rocket className="w-3 h-3 text-emerald-600" />
-                  <span>Capstone / Research Adoption</span>
+                  <GraduationCap className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>Quad-Helix Innovation Proposal</span>
                 </div>
                 <h3 className="text-lg font-bold text-slate-900 font-heading">
-                  Take Project & Assign Student Team
+                  Submit Project Adoption Proposal
                 </h3>
               </div>
               <button
@@ -689,9 +698,21 @@ export default function UniversityDashboard({
 
             {/* Problem Preview Box */}
             <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-1">
-              <span className="text-slate-400 uppercase text-[10px] font-bold block">Selected Community Problem</span>
+              <span className="text-slate-400 uppercase text-[10px] font-bold block">Selected Community Challenge</span>
               <div className="text-sm font-bold text-slate-900">{adoptingProblem.title}</div>
-              <div className="text-[11px] text-slate-500">{adoptingProblem.location?.address || 'Jharkhand'} • Sanctioned Budget: ₹1,80,000</div>
+              <div className="text-[11px] text-slate-500">
+                {adoptingProblem.location?.address || 'Jharkhand'} • Sanctioned Budget: {adoptingProblem.verification?.allocatedBudget ? `₹${adoptingProblem.verification.allocatedBudget.toLocaleString('en-IN')}` : (adoptingProblem.aiAnalysis?.estimatedBudget || '₹1,50,000')}
+              </div>
+            </div>
+
+            {/* Quad-Helix Process Notice */}
+            <div className="p-3.5 rounded-2xl bg-blue-50 border border-blue-200 text-blue-900 space-y-1">
+              <div className="font-bold flex items-center gap-1.5">
+                <span>🏛️ Municipal Government Approval Step</span>
+              </div>
+              <p className="text-[11px] text-blue-800 leading-relaxed font-medium">
+                This proposal will be officially transmitted to the Municipal Authority. Once the Government reviews your faculty mentor and hardware schematic, they will confirm adoption and sanction the grant.
+              </p>
             </div>
 
             <form onSubmit={handleConfirmAdopt} className="space-y-4">
@@ -784,15 +805,64 @@ export default function UniversityDashboard({
                   {isAdopting ? (
                     <>
                       <Loader2 className="w-4 h-4 animate-spin" />
-                      <span>Deploying Team...</span>
+                      <span>Transmitting Proposal...</span>
                     </>
                   ) : (
-                    <span>Confirm Adoption & Deploy Team →</span>
+                    <span>Submit Proposal to Government →</span>
                   )}
                 </button>
               </div>
 
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* 5. SUCCESS MODAL: PROPOSAL TRANSMITTED */}
+      {proposalSuccess && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm animate-fadeIn">
+          <div className="bg-white rounded-3xl border border-slate-200 max-w-md w-full p-6 sm:p-8 text-center space-y-4 shadow-2xl">
+            <div className="w-14 h-14 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center mx-auto text-2xl shadow-xs">
+              📋
+            </div>
+            <div>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
+                Proposal Transmitted Successfully
+              </span>
+              <h3 className="text-lg font-extrabold text-slate-900 font-heading mt-2">
+                Adoption Request Sent to Municipal Authority!
+              </h3>
+              <p className="text-xs text-slate-600 mt-2 leading-relaxed">
+                Proposal for <strong>"{proposalSuccess.title}"</strong> has been registered under <strong>{proposalSuccess.teamName}</strong>.
+              </p>
+            </div>
+
+            <div className="p-4 bg-amber-50 rounded-2xl border border-amber-200 text-left text-xs space-y-1.5 text-amber-900">
+              <div className="font-bold flex items-center gap-1.5">
+                <span>🏛️ Next Step: Government Approval</span>
+              </div>
+              <p className="text-[11px] text-amber-800 leading-relaxed">
+                To complete adoption, switch to the <strong>Government Authority Portal</strong> under <strong>"College Requests / Approvals"</strong> and click <strong>Approve Team & Sanction Grant</strong>.
+              </p>
+            </div>
+
+            <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-2.5">
+              <button
+                onClick={() => setProposalSuccess(null)}
+                className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition cursor-pointer"
+              >
+                Close & Stay Here
+              </button>
+              <button
+                onClick={() => {
+                  setProposalSuccess(null);
+                  if (setActiveTab) setActiveTab('government');
+                }}
+                className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition shadow-xs flex items-center justify-center gap-1.5 cursor-pointer"
+              >
+                <span>Switch to Government Portal →</span>
+              </button>
+            </div>
           </div>
         </div>
       )}

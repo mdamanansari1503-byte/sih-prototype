@@ -462,6 +462,182 @@ export const api = {
     return { success: true, data: { solved: 38, teams: 45, funding: "₹ 1.25 Cr", turnaround: "14 Days" } };
   },
 
+  // Adoption Requests / Proposals (Quad-Helix College Approvals)
+  getAdoptionRequests: async () => {
+    try {
+      const res = await fetch(`${API_BASE}/requests`);
+      if (res.ok) return await res.json();
+    } catch (e) {}
+
+    try {
+      const cached = localStorage.getItem('awaazgram_requests');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed) && parsed.length > 0) return { success: true, data: parsed };
+      }
+    } catch (e) {}
+
+    const defaultReqs = [
+      {
+        id: 'REQ-JH-2026-01',
+        problemId: 'ag1001',
+        problemTitle: 'Broken Street Light & Dark Corridor in Sector 4',
+        location: 'Ward 12, Ranchi',
+        university: 'MANIT Bhopal',
+        teamName: 'MANIT IoT & Energy Innovation Team',
+        teamLead: 'Rohan Nair (Student Lead)',
+        facultyMentor: 'Prof. Kumar',
+        teamMembers: ['Rohan Nair', 'Priya Verma', 'Amit Patel', 'Sneha Rao'],
+        requestedBudget: 180000,
+        aiRecommendedBudget: 180000,
+        aiMatchScore: 96,
+        aiShortReason: 'Direct match for Electrical & IoT Lab • Solar battery testing rig available.',
+        status: 'approved',
+        submittedAt: '2026-05-11T10:00:00Z'
+      },
+      {
+        id: 'REQ-JH-2026-02',
+        problemId: 'ag1008',
+        problemTitle: 'Contaminated Drinking Water Handpump in Ward 9',
+        location: 'Sector 4, Bokaro',
+        university: 'BIT Mesra, Ranchi',
+        teamName: 'Team Jaltarang Hydro Lab',
+        teamLead: 'Aakash Deshmukh',
+        facultyMentor: 'Prof. Arvind Rao',
+        teamMembers: ['Aakash Deshmukh', 'Tanvi Joshi', 'Rahul Patil', 'Omkar Shinde'],
+        requestedBudget: 190000,
+        aiRecommendedBudget: 180000,
+        aiMatchScore: 94,
+        aiShortReason: 'Nano-membrane filtration testing lab ready • Experienced water faculty guidance.',
+        status: 'approved',
+        submittedAt: '2026-05-08T14:30:00Z'
+      }
+    ];
+    localStorage.setItem('awaazgram_requests', JSON.stringify(defaultReqs));
+    return { success: true, data: defaultReqs };
+  },
+
+  createAdoptionRequest: async (reqData) => {
+    const newReq = {
+      id: `REQ-JH-${Date.now().toString().slice(-4)}`,
+      status: 'pending_approval',
+      submittedAt: new Date().toISOString(),
+      aiMatchScore: 94,
+      aiShortReason: 'University research lab equipped • Faculty mentor assigned • High student feasibility.',
+      aiRecommendedBudget: reqData.requestedBudget || 150000,
+      ...reqData
+    };
+
+    let requests = [];
+    try {
+      const cached = localStorage.getItem('awaazgram_requests');
+      if (cached) requests = JSON.parse(cached);
+    } catch (e) {}
+    const updated = [newReq, ...requests];
+    localStorage.setItem('awaazgram_requests', JSON.stringify(updated));
+
+    // Update problem object to store adoption proposal status
+    const problems = getLocalProblems();
+    const updatedProbs = problems.map(p => {
+      if (p.id === reqData.problemId) {
+        return {
+          ...p,
+          adoptionRequest: {
+            requestId: newReq.id,
+            teamName: reqData.teamName,
+            universityName: reqData.university,
+            studentLead: reqData.teamLead,
+            facultyMentor: reqData.facultyMentor,
+            status: 'pending_approval',
+            submittedAt: newReq.submittedAt
+          }
+        };
+      }
+      return p;
+    });
+    localStorage.setItem('awaazgram_problems', JSON.stringify(updatedProbs));
+
+    return { success: true, data: newReq };
+  },
+
+  approveAdoptionRequest: async (requestId) => {
+    let requests = [];
+    try {
+      const cached = localStorage.getItem('awaazgram_requests');
+      if (cached) requests = JSON.parse(cached);
+    } catch (e) {}
+
+    const targetReq = requests.find(r => r.id === requestId);
+    if (!targetReq) return { success: false, error: 'Request not found' };
+
+    const updatedRequests = requests.map(r => r.id === requestId ? { ...r, status: 'approved' } : r);
+    localStorage.setItem('awaazgram_requests', JSON.stringify(updatedRequests));
+
+    // Create the project now that Government sanctioned & approved
+    const projectRes = await api.createProject({
+      problemId: targetReq.problemId,
+      title: targetReq.problemTitle || 'Civic Innovation Project',
+      universityName: targetReq.university,
+      teamName: targetReq.teamName,
+      studentLead: targetReq.teamLead || targetReq.studentLead || 'Student Lead',
+      facultyMentor: targetReq.facultyMentor || 'Faculty Mentor',
+      teamMembers: targetReq.teamMembers || [targetReq.teamLead || 'Student Lead', 'Priya Verma', 'Amit Patel', 'Sneha Rao'],
+      solutionDetails: targetReq.solutionDetails || {
+        summary: targetReq.solutionSummary || 'Hardware prototyping and deployment.',
+        techStack: targetReq.techStack || ['IoT Sensors', 'MicroPython', 'Telemetry']
+      },
+      allocatedBudget: targetReq.aiRecommendedBudget || targetReq.requestedBudget || 150000
+    });
+
+    // Update Problem to in_progress
+    const currentProblems = getLocalProblems();
+    const updatedProbs = currentProblems.map(p => {
+      if (p.id === targetReq.problemId) {
+        return {
+          ...p,
+          status: 'in_progress',
+          projectId: projectRes.data?.id,
+          verification: {
+            ...(p.verification || {}),
+            status: 'verified',
+            allocatedBudget: targetReq.aiRecommendedBudget || targetReq.requestedBudget || 150000,
+            verifiedAt: new Date().toISOString()
+          },
+          adoptionRequest: {
+            ...(p.adoptionRequest || {}),
+            status: 'approved',
+            approvedAt: new Date().toISOString()
+          }
+        };
+      }
+      return p;
+    });
+    localStorage.setItem('awaazgram_problems', JSON.stringify(updatedProbs));
+
+    const updatedProblem = updatedProbs.find(p => p.id === targetReq.problemId);
+
+    return {
+      success: true,
+      data: {
+        request: { ...targetReq, status: 'approved' },
+        project: projectRes.data,
+        problem: updatedProblem
+      }
+    };
+  },
+
+  rejectAdoptionRequest: async (requestId, reason = 'Does not align with municipal grant scope.') => {
+    let requests = [];
+    try {
+      const cached = localStorage.getItem('awaazgram_requests');
+      if (cached) requests = JSON.parse(cached);
+    } catch (e) {}
+
+    const updatedRequests = requests.map(r => r.id === requestId ? { ...r, status: 'rejected', rejectionReason: reason } : r);
+    localStorage.setItem('awaazgram_requests', JSON.stringify(updatedRequests));
+    return { success: true, data: updatedRequests.find(r => r.id === requestId) };
+  },
+
   // Reset
   resetSystem: async () => {
     try {
@@ -469,6 +645,7 @@ export const api = {
     } catch (e) {}
     localStorage.setItem('awaazgram_problems', JSON.stringify(defaultProblems));
     localStorage.setItem('awaazgram_projects', JSON.stringify(defaultProjects));
+    localStorage.removeItem('awaazgram_requests');
     return { success: true };
   }
 };
